@@ -1,3 +1,4 @@
+import { ToolbarModule } from './design-tool/toolbar/toolbar.module';
 import { DesignToolModule } from './design-tool/design-tool.module';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -10,7 +11,8 @@ import { AppComponent } from './app.component';
   ],
   imports: [
     BrowserModule,
-    DesignToolModule
+    DesignToolModule,
+    ToolbarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
