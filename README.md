@@ -3,7 +3,7 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.11.
 
 ## Module Structure
-![structure](https://share.getcloudapp.com/llu5ePRB)
+![structure](https://p93.f3.n0.cdn.getcloudapp.com/items/llu5ePRB/732ad746-42be-46ed-911c-77b445ad8a29.jpg?source=viewer&v=0d3d64b6c4624633dc4f3b1371de30f4)
 
 ## Development server
 
