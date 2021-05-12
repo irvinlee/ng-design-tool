@@ -60,6 +60,9 @@ export class DesignToolService {
   insertText(): void {
     const currentDesign = this.designState.getValue();
     const newTextElement = new TextModel();
+
+    this.undoBuffer.push(currentDesign);
+    this.updateBufferLengths();
     currentDesign.elements.set(generateRandomId(), newTextElement);
     this.updateCurrentDesign(currentDesign);
   }

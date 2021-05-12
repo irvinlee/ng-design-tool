@@ -1,3 +1,4 @@
+import { DesignToolService } from './../../design-tool.service';
 import { DesignCanvassComponent } from './design-canvass/design-canvass.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -21,6 +22,9 @@ import { StockImageItemComponent } from './stock-image-item/stock-image-item.com
   ],
   exports: [
     DesignCanvassComponent
+  ],
+  providers: [
+    DesignToolService
   ]
 })
 export class DesignCanvassModule { }
