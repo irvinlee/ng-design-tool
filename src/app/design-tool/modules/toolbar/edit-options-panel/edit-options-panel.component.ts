@@ -1,3 +1,4 @@
+import { DesignToolService } from './../../../design-tool.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -6,8 +7,21 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./edit-options-panel.component.scss']
 })
 export class EditOptionsPanelComponent implements OnInit {
+  isUndoEnabled = false;
+  isRedoEnabled = false;
 
-  constructor() { }
+  constructor(private designToolService: DesignToolService) {
+    this.designToolService.undoBufferLength.subscribe((bufferLength) => this.isUndoEnabled = !!bufferLength);
+    this.designToolService.redoBufferLength.subscribe((bufferLength) => this.isRedoEnabled = !!bufferLength);
+  }
+
+  onUndo(): void {
+    this.designToolService.undo();
+  }
+
+  onRedo(): void {
+    this.designToolService.redo();
+  }
 
   ngOnInit(): void {
   }

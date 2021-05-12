@@ -1,3 +1,4 @@
+import { DesignToolService } from './design-tool.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DesignToolComponent } from './design-tool.component';
@@ -16,6 +17,9 @@ import { DesignCanvassModule } from './modules/design-canvass/design-canvass.mod
   ],
   exports: [
     DesignToolComponent
+  ],
+  providers: [
+    DesignToolService
   ]
 })
 export class DesignToolModule { }

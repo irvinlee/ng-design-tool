@@ -1,3 +1,4 @@
+import { DesignToolService } from './../../design-tool.service';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -22,6 +23,9 @@ import { MainOptionsPanelComponent } from './main-options-panel/main-options-pan
   ],
   exports: [
     ToolbarComponent
+  ],
+  providers: [
+    DesignToolService
   ]
 })
 export class ToolbarModule { }

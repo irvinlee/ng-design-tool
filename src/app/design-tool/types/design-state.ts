@@ -4,5 +4,5 @@ import { Text } from './text';
 import { Shape } from './shape';
 
 export interface DesignState {
-  elements: Array<StockImage | Image | Text | Shape>;
+  elements?: Array<StockImage | Image | Text | Shape>;
 }

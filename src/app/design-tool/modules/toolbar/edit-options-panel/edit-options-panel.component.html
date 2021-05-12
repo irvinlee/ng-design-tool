@@ -1,1 +1,6 @@
-<p>edit-options-panel works!</p>
+<div class="edit-options-panel-wrapper">
+  <div class="undo-redo-wrapper">
+    <button [disabled]="!isUndoEnabled">Undo</button>
+    <button [disabled]="!isRedoEnabled">Redo</button>
+  </div>
+</div>
