@@ -6,6 +6,7 @@ import { TextItemComponent } from './text-item/text-item.component';
 import { ImageItemComponent } from './image-item/image-item.component';
 import { ShapeItemComponent } from './shape-item/shape-item.component';
 import { StockImageItemComponent } from './stock-image-item/stock-image-item.component';
+import { NgxSvgModule } from 'ngx-svg';
 
 
 
@@ -18,7 +19,8 @@ import { StockImageItemComponent } from './stock-image-item/stock-image-item.com
     StockImageItemComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    NgxSvgModule
   ],
   exports: [
     DesignCanvassComponent

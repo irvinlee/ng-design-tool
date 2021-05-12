@@ -31,7 +31,11 @@ export class DesignToolService {
 
   private updateCurrentDesign(newDesign: DesignState): void {
     this.redoBuffer = [];
-    this.undoBuffer.shift();
+
+    if (this.undoBuffer.length > this.MAX_BUFFER_LENGTH) {
+      this.undoBuffer.shift();
+    }
+
     this.undoBuffer.push(this.designState.getValue());
     this.designState.next(newDesign);
     this.updateBufferLengths();
@@ -60,10 +64,9 @@ export class DesignToolService {
   insertText(): void {
     const currentDesign = this.designState.getValue();
     const newTextElement = new TextModel();
+    const elementsMap = new Map(currentDesign.elements);
 
-    this.undoBuffer.push(currentDesign);
-    this.updateBufferLengths();
-    currentDesign.elements.set(generateRandomId(), newTextElement);
-    this.updateCurrentDesign(currentDesign);
+    elementsMap.set(generateRandomId(), newTextElement);
+    this.updateCurrentDesign({...currentDesign, elements: elementsMap});
   }
 }
