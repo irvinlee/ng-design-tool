@@ -1,3 +1,5 @@
+import { TextModel } from './models/text-model';
+import { generateRandomId } from './common/utils';
 import { DesignState } from './types/design-state';
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -6,7 +8,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class DesignToolService {
-  private designState: BehaviorSubject<DesignState> = new BehaviorSubject({});
+  private designState: BehaviorSubject<DesignState> = new BehaviorSubject({elements: new Map()});
   // tslint:disable-next-line:variable-name
   private _undoBufferLength: BehaviorSubject<number> = new BehaviorSubject(0);
   // tslint:disable-next-line:variable-name
@@ -25,6 +27,14 @@ export class DesignToolService {
   private updateBufferLengths(): void {
     this._undoBufferLength.next(this.undoBuffer.length);
     this._redoBufferLength.next(this.redoBuffer.length);
+  }
+
+  private updateCurrentDesign(newDesign: DesignState): void {
+    this.redoBuffer = [];
+    this.undoBuffer.shift();
+    this.undoBuffer.push(this.designState.getValue());
+    this.designState.next(newDesign);
+    this.updateBufferLengths();
   }
 
   undo(): void {
@@ -47,11 +57,10 @@ export class DesignToolService {
     }
   }
 
-  update(newDesign: DesignState): void {
-    this.redoBuffer = [];
-    this.undoBuffer.shift();
-    this.undoBuffer.push(this.designState.getValue());
-    this.designState.next(newDesign);
-    this.updateBufferLengths();
+  insertText(): void {
+    const currentDesign = this.designState.getValue();
+    const newTextElement = new TextModel();
+    currentDesign.elements.set(generateRandomId(), newTextElement);
+    this.updateCurrentDesign(currentDesign);
   }
 }

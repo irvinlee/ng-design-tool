@@ -1,3 +1,4 @@
+import { DesignToolService } from './../../../design-tool.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class InsertItemsPanelComponent implements OnInit {
 
-  constructor() { }
+  constructor(private designToolService: DesignToolService) { }
 
   ngOnInit(): void {
   }
 
+  onInsertText(): void {
+    this.designToolService.insertText();
+  }
 }
