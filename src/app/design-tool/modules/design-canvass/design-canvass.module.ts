@@ -8,8 +8,6 @@ import { ShapeItemComponent } from './shape-item/shape-item.component';
 import { StockImageItemComponent } from './stock-image-item/stock-image-item.component';
 import { NgxSvgModule } from 'ngx-svg';
 
-
-
 @NgModule({
   declarations: [
     DesignCanvassComponent,
