@@ -1,3 +1,7 @@
 <div class="canvass-wrapper">
-  <svg-container containerId="svg-element"></svg-container>
+  <svg-container containerId="svg-element">
+    <div *ngFor="let element of textElements | keyvalue">
+      <app-text-item [id]="element.key" [data]="element.value"></app-text-item>
+    </div>
+  </svg-container>
 </div>

@@ -5,6 +5,5 @@ import { Coordinates } from './coordinates';
 export interface Text {
   value: string;
   coordinates: Coordinates;
-  dimensions: Dimensions;
   format: TextFormat;
 }
