@@ -1,0 +1,5 @@
+<div class="canvas-wrapper">
+  <canvas [id]="id" width="width" [height]="height" view>
+    <app-text-item *ngFor="let element of textElements | keyvalue" [id]="element.key" [data]="element.value"></app-text-item>  
+  </canvas>
+</div>

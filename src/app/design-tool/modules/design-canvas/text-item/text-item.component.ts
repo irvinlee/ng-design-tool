@@ -31,6 +31,10 @@ export class TextItemComponent implements OnInit {
     });
 
     this._elementRef.addEventListener('mouseup', (event) => {
+      this.handleEndDrag(event as MouseEvent);
+    });
+
+    this._elementRef.addEventListener('mousemove', (event) => {
 
     });
 
@@ -40,9 +44,17 @@ export class TextItemComponent implements OnInit {
   handleStartDrag($event: MouseEvent): void {
     this._isDragging = true;
     // this._elementRef.setAttribute('style', '');
+    console.log(this._isDragging);
   }
 
   handleEndDrag($event: MouseEvent): void {
     this._isDragging = false;
+    console.log(this._isDragging);
+  }
+
+  handleMouseMove($event: MouseEvent): void {
+    if (this._isDragging) {
+      console.log($event.movementX + ' - ' + $event.movementX);
+    }
   }
 }
