@@ -1,9 +1,9 @@
+import { DesignCanvasModule } from './modules/design-canvas/design-canvas.module';
 import { DesignToolService } from './design-tool.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DesignToolComponent } from './design-tool.component';
 import { ToolbarModule } from './modules/toolbar/toolbar.module';
-import { DesignCanvassModule } from './modules/design-canvass/design-canvass.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import { DesignCanvassModule } from './modules/design-canvass/design-canvass.mod
   imports: [
     CommonModule,
     ToolbarModule,
-    DesignCanvassModule
+    DesignCanvasModule
   ],
   exports: [
     DesignToolComponent

@@ -1,10 +1,11 @@
+import { Renderer } from './../renderer';
 import { TextModel } from './../../../models/text-model';
 import { Shape } from './../../../types/shape';
 import { Image } from './../../../types/image';
 import { Text } from './../../../types/text';
 import { StockImage } from './../../../types/stock-image';
 import { DesignToolService } from './../../../design-tool.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, AfterViewInit,  } from '@angular/core';
 import { generateRandomId } from '../../../common/utils';
 
 @Component({
@@ -12,10 +13,12 @@ import { generateRandomId } from '../../../common/utils';
   templateUrl: './design-canvas.component.html',
   styleUrls: ['./design-canvas.component.scss']
 })
-export class DesigncanvasComponent implements OnInit {
+export class DesignCanvasComponent implements AfterViewInit{
   @Input() width = 300;
   @Input() height = 150;
   readonly id = generateRandomId();
+  // tslint:disable-next-line:variable-name
+  private _renderer: Renderer | undefined;
 
   public textElements: Map<string, Text> = new Map();
 
@@ -30,7 +33,7 @@ export class DesigncanvasComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
+    this._renderer = new Renderer(document.getElementById(this.id) as HTMLCanvasElement);
   }
-
 }
