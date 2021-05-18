@@ -18,6 +18,7 @@ export class TextModel implements Text{
     alignment: TextAlign.LEFT
   } as TextFormat;
   dimensions = {} as Dimensions;
+  metrics = {} as TextMetrics;
 
   constructor() {
 
@@ -25,8 +26,7 @@ export class TextModel implements Text{
 
   renderToCanvas(canvasContext: CanvasRenderingContext2D): void{
     canvasContext.font = `${this.format.size}px ${this.format.font}`;
-    const width = canvasContext.measureText(this.value);
+    this.metrics = canvasContext.measureText(this.value);
     canvasContext.fillText(this.value, this.coordinates.left, this.coordinates.top);
-    console.log(width);
   }
 }

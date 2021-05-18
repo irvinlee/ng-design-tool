@@ -7,4 +7,5 @@ export interface Text {
   coordinates: Coordinates;
   format: TextFormat;
   dimensions: Dimensions;
+  metrics?: TextMetrics;
 }
