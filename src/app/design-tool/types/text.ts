@@ -6,4 +6,5 @@ export interface Text {
   value: string;
   coordinates: Coordinates;
   format: TextFormat;
+  dimensions: Dimensions;
 }

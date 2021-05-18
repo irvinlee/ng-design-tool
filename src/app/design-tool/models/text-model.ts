@@ -17,8 +17,16 @@ export class TextModel implements Text{
     isItalic: false,
     alignment: TextAlign.LEFT
   } as TextFormat;
+  dimensions = {} as Dimensions;
 
   constructor() {
 
+  }
+
+  renderToCanvas(canvasContext: CanvasRenderingContext2D): void{
+    canvasContext.font = `${this.format.size}px ${this.format.font}`;
+    const width = canvasContext.measureText(this.value);
+    canvasContext.fillText(this.value, this.coordinates.left, this.coordinates.top);
+    console.log(width);
   }
 }

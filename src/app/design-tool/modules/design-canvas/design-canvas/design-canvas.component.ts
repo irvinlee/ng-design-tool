@@ -20,16 +20,9 @@ export class DesignCanvasComponent implements AfterViewInit{
   // tslint:disable-next-line:variable-name
   private _renderer: Renderer | undefined;
 
-  public textElements: Map<string, Text> = new Map();
-
   constructor(private designToolService: DesignToolService) {
     this.designToolService.currentState.subscribe((canvasState) => {
-      this.textElements = new Map();
-      for (const [key, value] of canvasState.elements) {
-        if (value instanceof TextModel) {
-          this.textElements.set(key, value as Text);
-        }
-      }
+      this._renderer?.renderElements(canvasState.elements);
     });
   }
 
