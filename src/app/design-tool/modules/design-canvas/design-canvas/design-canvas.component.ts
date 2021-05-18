@@ -28,25 +28,20 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     });
   }
 
-  private _onCanvasMouseMove(event: MouseEvent): void {
-    console.log(event);
-  }
-
-  private _bindCanvasMouseEvents(): void {
-    this._canvasElement?.addEventListener('mousemove', this._onCanvasMouseMove);
-  }
-
-  private _unbindCanvasMouseEvents(): void {
-    this._canvasElement?.removeEventListener('mousemove', this._onCanvasMouseMove);
-  }
-
   ngAfterViewInit(): void {
     this._canvasElement = document.getElementById(this.id) as HTMLCanvasElement;
     this._renderer = new Renderer(this._canvasElement);
-    this._bindCanvasMouseEvents();
+    this._renderer.mouseHoverObservable.subscribe((hoveredEls) => {
+      if (hoveredEls.length) {
+        (document.getElementById(this.id) as HTMLElement).style.cursor = 'pointer';
+      } else {
+        (document.getElementById(this.id) as HTMLElement).style.cursor = 'default';
+      }
+      this.designToolService.setHoveredEls(hoveredEls);
+    });
   }
 
   ngOnDestroy(): void {
-    this._unbindCanvasMouseEvents();
+    this._renderer?.destroy();
   }
 }
