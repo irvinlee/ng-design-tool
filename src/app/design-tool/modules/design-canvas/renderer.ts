@@ -37,15 +37,17 @@ export class Renderer {
   }
 
   private _getHoveredElements(mouseX: number, mouseY: number): string {
-    const mapKeys = Array.from(this.elements.keys()).reverse();
+    let hoveredKey = '';
 
-    for (const mapKey of mapKeys) {
-      if (this.elements.get(mapKey)?.checkIsHovered(mouseX, mouseY)) {
-        return mapKey;
+    for ( const [ key, value ] of this.elements.entries()) {
+      if (value.checkIsHovered(mouseX, mouseY)) {
+        if (!hoveredKey || (this.elements.get(hoveredKey) as DesignElement)?.zIndex < value.zIndex) {
+          hoveredKey = key;
+        }
       }
     }
 
-    return '';
+    return hoveredKey;
   }
 
   private _onCanvasMouseMove(event: MouseEvent): void {

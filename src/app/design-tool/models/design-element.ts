@@ -5,7 +5,7 @@ export abstract class DesignElement {
   isSelected = false;
   metrics = {} as TextMetrics;
   coordinates = {top: 100, left: 100} as Coordinates;
-  zInddex = 0;
+  zIndex = 0;
 
   constructor() {}
 
