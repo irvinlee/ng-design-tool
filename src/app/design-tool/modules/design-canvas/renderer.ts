@@ -33,9 +33,7 @@ export class Renderer {
   private _renderElements(): void {
     this.clearCanvas();
     for (const [key, value] of this.elements) {
-      if (value instanceof TextModel) {
-        value.renderToCanvas(this.ctx as CanvasRenderingContext2D);
-      }
+      value.renderToCanvas(this.ctx as CanvasRenderingContext2D);
     }
   }
 

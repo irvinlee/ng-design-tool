@@ -14,4 +14,6 @@ export abstract class DesignElement {
           mouseY >= this.coordinates.top - this.metrics.actualBoundingBoxAscent - 5 &&
           mouseY <= this.coordinates.top;
   }
+
+  abstract renderToCanvas(canvasContext: CanvasRenderingContext2D): void;
 }
