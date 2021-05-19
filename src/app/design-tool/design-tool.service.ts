@@ -14,6 +14,8 @@ export class DesignToolService {
   private _undoBufferLength: BehaviorSubject<number> = new BehaviorSubject(0);
   // tslint:disable-next-line:variable-name
   private _redoBufferLength: BehaviorSubject<number> = new BehaviorSubject(0);
+  // tslint:disable-next-line:variable-name
+  private _selectedElement: BehaviorSubject<DesignElement> = new BehaviorSubject({} as DesignElement);
 
   private undoBuffer: Array<DesignState> = [];
   private redoBuffer: Array<DesignState> = [];
@@ -22,6 +24,7 @@ export class DesignToolService {
   readonly currentState: Observable<DesignState> = this.designState.asObservable();
   readonly undoBufferLength: Observable<number> = this._undoBufferLength.asObservable();
   readonly redoBufferLength: Observable<number> = this._redoBufferLength.asObservable();
+  readonly selectedElement: Observable<DesignElement|undefined> = this._selectedElement.asObservable();
 
   constructor() {}
 
@@ -85,5 +88,22 @@ export class DesignToolService {
       newElementsMap.set(key, asDesignElement);
     }
     this.designState.next({...currentDesign, elements: newElementsMap});
+  }
+
+  selectElement(elementId: string): void {
+    const currentDesign = this.designState.getValue();
+    const newElementsMap = new Map();
+
+    for (const [key, value] of currentDesign.elements.entries()) {
+      const asDesignElement = (value as DesignElement);
+      if (key === elementId) {
+        asDesignElement.isSelected = true;
+      } else {
+        asDesignElement.isSelected = false;
+      }
+      newElementsMap.set(key, asDesignElement);
+    }
+    this.designState.next({...currentDesign, elements: newElementsMap});
+    this._selectedElement.next(newElementsMap.get(elementId));
   }
 }

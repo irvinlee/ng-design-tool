@@ -32,7 +32,7 @@ export class TextModel extends DesignElement implements Text{
 
     canvasContext.fillText(this.value, this.coordinates.left, this.coordinates.top);
 
-    if (this.isHovered) {
+    if (this.isHovered || this.isSelected) {
       canvasContext.beginPath();
       canvasContext.rect(
         this.coordinates.left - 5,
