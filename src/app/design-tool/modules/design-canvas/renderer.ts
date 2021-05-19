@@ -8,8 +8,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class Renderer {
   private ctx: CanvasRenderingContext2D | undefined;
   private elements: Map<string, DesignElement> = new Map();
-  private mouseHoverSubject: BehaviorSubject<Array<string>> = new BehaviorSubject([] as Array<string>);
-  private clickSubject: BehaviorSubject<Array<string>> = new BehaviorSubject([] as Array<string>);
+  private mouseHoverSubject: BehaviorSubject<string> = new BehaviorSubject('');
+  private clickSubject: BehaviorSubject<string> = new BehaviorSubject('');
 
   mouseHoverObservable = this.mouseHoverSubject.asObservable();
   mouseClickObservable = this.clickSubject.asObservable();
@@ -40,16 +40,16 @@ export class Renderer {
     }
   }
 
-  private _getHoveredElements(mouseX: number, mouseY: number): Array<string> {
-    const ret: Array<string> = [];
+  private _getHoveredElements(mouseX: number, mouseY: number): string {
+    const mapKeys = Array.from(this.elements.keys()).reverse();
 
-    for (const [key, value] of this.elements) {
-      if (value instanceof TextModel && value.checkIsHovered(mouseX, mouseY)) {
-        ret.push(key);
+    for (const mapKey of mapKeys) {
+      if (this.elements.get(mapKey)?.checkIsHovered(mouseX, mouseY)) {
+        return mapKey;
       }
     }
 
-    return ret;
+    return '';
   }
 
   private _onCanvasMouseMove(event: MouseEvent): void {

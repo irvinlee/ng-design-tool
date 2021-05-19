@@ -66,19 +66,18 @@ export class DesignToolService {
     const currentDesign = this.designState.getValue();
     const newTextElement = new TextModel();
     const elementsMap = new Map(currentDesign.elements);
-
+    newTextElement.zInddex = currentDesign.elements.size;
     elementsMap.set(generateRandomId(), newTextElement);
     this.updateCurrentDesign({...currentDesign, elements: elementsMap});
   }
 
-  setHoveredEls(elementIds: Array<string>): void {
+  setHoveredElement(elementId: string): void {
     const currentDesign = this.designState.getValue();
     const newElementsMap = new Map();
-    const idHashTable = new Set(elementIds);
 
     for (const [key, value] of currentDesign.elements.entries()) {
       const asDesignElement = (value as DesignElement);
-      if (idHashTable.has(key)) {
+      if (key === elementId) {
         asDesignElement.isHovered = true;
       } else {
         asDesignElement.isHovered = false;

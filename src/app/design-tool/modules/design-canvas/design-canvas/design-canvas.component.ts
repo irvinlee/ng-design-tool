@@ -40,11 +40,11 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       } else {
         (document.getElementById(this.id) as HTMLElement).style.cursor = 'default';
       }
-      this.designToolService.setHoveredEls(hoveredEls);
+      this.designToolService.setHoveredElement(hoveredEls);
     }));
 
-    this._subscriptions.push(this._renderer.mouseClickObservable.subscribe((clickedEls) => {
-      console.log(clickedEls);
+    this._subscriptions.push(this._renderer.mouseClickObservable.subscribe((clickedEl) => {
+      console.log(clickedEl);
     }));
   }
 
