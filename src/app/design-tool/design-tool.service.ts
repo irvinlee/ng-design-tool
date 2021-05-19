@@ -1,3 +1,4 @@
+import { DesignElement } from './types/design-element';
 import { TextModel } from './models/text-model';
 import { generateRandomId } from './common/utils';
 import { DesignState } from './types/design-state';
@@ -76,15 +77,14 @@ export class DesignToolService {
     const idHashTable = new Set(elementIds);
 
     for (const [key, value] of currentDesign.elements.entries()) {
-      const asTextModel = (value as TextModel);
+      const asDesignElement = (value as DesignElement);
       if (idHashTable.has(key)) {
-        asTextModel.isHovered = true;
+        asDesignElement.isHovered = true;
       } else {
-        asTextModel.isHovered = false;
+        asDesignElement.isHovered = false;
       }
-      newElementsMap.set(key, asTextModel);
+      newElementsMap.set(key, asDesignElement);
     }
-    console.log(newElementsMap);
     this.designState.next({...currentDesign, elements: newElementsMap});
   }
 }

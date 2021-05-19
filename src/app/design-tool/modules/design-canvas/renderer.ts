@@ -1,3 +1,4 @@
+import { DesignElement } from './../../types/design-element';
 import { TextModel } from './../../models/text-model';
 import { Shape } from './../../types/shape';
 import { Image } from './../../types/image';
@@ -6,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D | undefined;
-  private elements: Map<string, StockImage | Image | Text | Shape> = new Map();
+  private elements: Map<string, DesignElement> = new Map();
   private mouseHoverSubject: BehaviorSubject<Array<string>> = new BehaviorSubject([] as Array<string>);
   mouseHoverObservable = this.mouseHoverSubject.asObservable();
 
@@ -20,7 +21,7 @@ export class Renderer {
     this.ctx?.clearRect(0, 0, this._elementRef.width, this._elementRef.height);
   }
 
-  setElements(elements: Map<string, StockImage | Image | Text | Shape>): void{
+  setElements(elements: Map<string, DesignElement>): void{
     this.elements = new Map(elements);
     this._renderElements();
   }

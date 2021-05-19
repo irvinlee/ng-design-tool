@@ -1,8 +1,5 @@
-import { StockImage } from './stock-image';
-import { Image } from './image';
-import { Text } from './text';
-import { Shape } from './shape';
+import { DesignElement } from './design-element';
 
 export interface DesignState {
-  elements: Map<string, StockImage | Image | Text | Shape>;
+  elements: Map<string, DesignElement>;
 }

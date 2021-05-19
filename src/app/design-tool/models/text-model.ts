@@ -1,12 +1,13 @@
+import { DesignElement } from './../types/design-element';
 import { Coordinates } from './../types/coordinates';
 import { Dimensions } from './../types/dimensions';
 import { TextFormat } from './../types/text-format';
 import { Text } from './../types/text';
 import { TextAlign } from '../types/text-align.enum';
 
-export class TextModel implements Text{
+export class TextModel extends DesignElement implements Text{
   value = 'New Text Element';
-  coordinates = {top: 100, left: 100} as Coordinates;
+
   format = {
     font: 'Arial',
     size: 12,
@@ -18,18 +19,9 @@ export class TextModel implements Text{
     alignment: TextAlign.LEFT
   } as TextFormat;
   dimensions = {} as Dimensions;
-  metrics = {} as TextMetrics;
-  isHovered = false;
 
   constructor() {
-
-  }
-
-  checkIsHovered(mouseX: number, mouseY: number): boolean {
-    return mouseX >= this.coordinates.left - 5 &&
-          mouseX <= this.coordinates.left + this.metrics.width + 10 &&
-          mouseY >= this.coordinates.top - this.metrics.actualBoundingBoxAscent - 5 &&
-          mouseY <= this.coordinates.top;
+    super();
   }
 
   renderToCanvas(canvasContext: CanvasRenderingContext2D): void{
