@@ -109,5 +109,12 @@ export class DesignToolService {
   }
 
   moveElement(elementId: string, newCoordinates: Coordinates): void {
+    const currentDesign = this.designState.getValue();
+    const newElementsMap = new Map(currentDesign.elements);
+    const elementToUpdate = newElementsMap.get(elementId);
+
+    (elementToUpdate as DesignElement).coordinates = {...newCoordinates};
+    newElementsMap.set(elementId, elementToUpdate as DesignElement);
+    this.updateCurrentDesign({...currentDesign, elements: newElementsMap});
   }
 }

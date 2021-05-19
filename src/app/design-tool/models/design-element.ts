@@ -3,6 +3,7 @@ import { Coordinates } from '../types/coordinates';
 export abstract class DesignElement {
   isHovered = false;
   isSelected = false;
+
   metrics = {} as TextMetrics;
   coordinates = {top: 100, left: 100} as Coordinates;
   zIndex = 0;

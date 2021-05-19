@@ -1,3 +1,4 @@
+import { ElementDragEvent } from './../../../types/element-drag-event';
 import { Renderer } from './../renderer';
 import { DesignToolService } from './../../../design-tool.service';
 import { Component, Input, AfterViewInit, OnDestroy } from '@angular/core';
@@ -40,6 +41,12 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
     this._subscriptions.push(this._renderer.mouseClickObservable.subscribe((clickedEl) => {
       this.designToolService.selectElement(clickedEl);
+    }));
+
+    this._subscriptions.push(this._renderer.elementDragObservable.subscribe((event: ElementDragEvent) => {
+      if (event.elementKey)  {
+        this.designToolService.moveElement(event.elementKey, {left: event.x, top: event.y});
+      }
     }));
   }
 

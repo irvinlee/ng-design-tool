@@ -1,3 +1,4 @@
+import { ElementDragEvent } from './../../types/element-drag-event';
 import { DesignElement } from '../../models/design-element';
 import { BehaviorSubject } from 'rxjs';
 
@@ -6,9 +7,13 @@ export class Renderer {
   private elements: Map<string, DesignElement> = new Map();
   private mouseHoverSubject: BehaviorSubject<string> = new BehaviorSubject('');
   private clickSubject: BehaviorSubject<string> = new BehaviorSubject('');
+  private elementDragSubject: BehaviorSubject<ElementDragEvent> = new BehaviorSubject({} as ElementDragEvent);
+
+  private draggedElementKey = '';
 
   mouseHoverObservable = this.mouseHoverSubject.asObservable();
   mouseClickObservable = this.clickSubject.asObservable();
+  elementDragObservable = this.elementDragSubject.asObservable();
 
   // tslint:disable-next-line:variable-name
   constructor(private _elementRef: HTMLCanvasElement) {
@@ -36,7 +41,7 @@ export class Renderer {
     }
   }
 
-  private _getHoveredElements(mouseX: number, mouseY: number): string {
+  private _getHoveredElement(mouseX: number, mouseY: number): string {
     let hoveredKey = '';
 
     for ( const [ key, value ] of this.elements.entries()) {
@@ -52,12 +57,26 @@ export class Renderer {
 
   private _onCanvasMouseMove(event: MouseEvent): void {
     const {x, y} = this._getRelativeCursorCoordinates(event);
-    this.mouseHoverSubject.next(this._getHoveredElements(x, y));
+
+    if (!this.draggedElementKey) { // if the user is not dragging an element
+      this.mouseHoverSubject.next(this._getHoveredElement(x, y));
+    } else {
+      this.elementDragSubject.next({elementKey: this.draggedElementKey, x, y } as ElementDragEvent);
+    }
   }
 
   private _onCanvasClick(event: MouseEvent): void {
     const {x, y} = this._getRelativeCursorCoordinates(event);
-    this.clickSubject.next(this._getHoveredElements(x, y));
+    this.clickSubject.next(this._getHoveredElement(x, y));
+  }
+
+  private _onCanvasMouseDown(event: MouseEvent): void {
+    const {x, y} = this._getRelativeCursorCoordinates(event);
+    this.draggedElementKey = this._getHoveredElement(x, y);
+  }
+
+  private _onCanvasMouseUp(event: MouseEvent): void {
+    this.draggedElementKey = '';
   }
 
   private _getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {
@@ -71,10 +90,14 @@ export class Renderer {
   private _bindCanvasMouseEvents(): void {
     this._elementRef?.addEventListener('mousemove', this._onCanvasMouseMove.bind(this));
     this._elementRef?.addEventListener('click', this._onCanvasClick.bind(this));
+    this._elementRef?.addEventListener('mousedown', this._onCanvasMouseDown.bind(this));
+    this._elementRef?.addEventListener('mouseup', this._onCanvasMouseUp.bind(this));
   }
 
   private _unbindCanvasMouseEvents(): void {
     this._elementRef?.removeEventListener('mousemove', this._onCanvasMouseMove.bind(this));
     this._elementRef?.removeEventListener('click', this._onCanvasClick.bind(this));
+    this._elementRef?.removeEventListener('mousedown', this._onCanvasMouseDown.bind(this));
+    this._elementRef?.removeEventListener('mouseup', this._onCanvasMouseUp.bind(this));
   }
 }
