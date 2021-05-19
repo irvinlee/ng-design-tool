@@ -9,7 +9,10 @@ export class Renderer {
   private ctx: CanvasRenderingContext2D | undefined;
   private elements: Map<string, DesignElement> = new Map();
   private mouseHoverSubject: BehaviorSubject<Array<string>> = new BehaviorSubject([] as Array<string>);
+  private clickSubject: BehaviorSubject<Array<string>> = new BehaviorSubject([] as Array<string>);
+
   mouseHoverObservable = this.mouseHoverSubject.asObservable();
+  mouseClickObservable = this.clickSubject.asObservable();
 
   // tslint:disable-next-line:variable-name
   constructor(private _elementRef: HTMLCanvasElement) {
@@ -50,8 +53,13 @@ export class Renderer {
   }
 
   private _onCanvasMouseMove(event: MouseEvent): void {
-    const mouseCoords = this._getRelativeCursorCoordinates(event);
-    this.mouseHoverSubject.next(this._getHoveredElements(mouseCoords.x, mouseCoords.y));
+    const {x, y} = this._getRelativeCursorCoordinates(event);
+    this.mouseHoverSubject.next(this._getHoveredElements(x, y));
+  }
+
+  private _onCanvasClick(event: MouseEvent): void {
+    const {x, y} = this._getRelativeCursorCoordinates(event);
+    this.clickSubject.next(this._getHoveredElements(x, y));
   }
 
   private _getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {
@@ -64,9 +72,11 @@ export class Renderer {
 
   private _bindCanvasMouseEvents(): void {
     this._elementRef?.addEventListener('mousemove', this._onCanvasMouseMove.bind(this));
+    this._elementRef?.addEventListener('click', this._onCanvasClick.bind(this));
   }
 
   private _unbindCanvasMouseEvents(): void {
     this._elementRef?.removeEventListener('mousemove', this._onCanvasMouseMove.bind(this));
+    this._elementRef?.removeEventListener('click', this._onCanvasClick.bind(this));
   }
 }
