@@ -44,6 +44,8 @@ export class DesignToolService {
     this.undoBuffer.push(this.designState.getValue());
     this.designState.next(newDesign);
     this.updateBufferLengths();
+    // console.log(this.undoBuffer);
+    // console.log(this.designState.getValue());
   }
 
   undo(): void {
@@ -108,10 +110,21 @@ export class DesignToolService {
     this._selectedElement.next(newElementsMap.get(elementId));
   }
 
-  moveElement(elementId: string, newCoordinates: Coordinates): void {
+  dragElement(elementId: string, newCoordinates: Coordinates): void {
     const currentDesign = this.designState.getValue();
     const newElementsMap = new Map(currentDesign.elements);
     const elementToUpdate = newElementsMap.get(elementId);
+
+    (elementToUpdate as DesignElement).coordinates = {...newCoordinates};
+    newElementsMap.set(elementId, elementToUpdate as DesignElement);
+    this.designState.next({...currentDesign, elements: newElementsMap});
+  }
+
+  // TODO: DRY this up later..
+  dropElement(elementId: string, newCoordinates: Coordinates): void {
+    const currentDesign = this.designState.getValue();
+    const newElementsMap = new Map(currentDesign.elements);
+    const elementToUpdate = newElementsMap.get(elementId)?.clone();
 
     (elementToUpdate as DesignElement).coordinates = {...newCoordinates};
     newElementsMap.set(elementId, elementToUpdate as DesignElement);

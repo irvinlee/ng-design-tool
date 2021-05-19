@@ -42,4 +42,19 @@ export class TextModel extends DesignElement implements Text{
       canvasContext.stroke();
     }
   }
+
+  clone(): TextModel {
+    const theClone = new TextModel();
+
+    theClone.value = this.value;
+    theClone.format = {...this.format};
+    theClone.dimensions = {...this.dimensions};
+    theClone.isHovered = this.isHovered;
+    theClone.isSelected = this.isSelected;
+    theClone.metrics = {...this.metrics};
+    theClone.coordinates = {...this.coordinates};
+    theClone.zIndex = this.zIndex;
+
+    return theClone;
+  }
 }

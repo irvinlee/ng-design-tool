@@ -45,7 +45,13 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
     this._subscriptions.push(this._renderer.elementDragObservable.subscribe((event: ElementDragEvent) => {
       if (event.elementKey)  {
-        this.designToolService.moveElement(event.elementKey, {left: event.x, top: event.y});
+        this.designToolService.dragElement(event.elementKey, {left: event.x, top: event.y});
+      }
+    }));
+
+    this._subscriptions.push(this._renderer.elementDropObservable.subscribe((event: ElementDragEvent) => {
+      if (event.elementKey)  {
+        this.designToolService.dropElement(event.elementKey, {left: event.x, top: event.y});
       }
     }));
   }

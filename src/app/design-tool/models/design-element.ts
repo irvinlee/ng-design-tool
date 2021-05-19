@@ -18,4 +18,5 @@ export abstract class DesignElement {
   }
 
   abstract renderToCanvas(canvasContext: CanvasRenderingContext2D): void;
+  abstract clone(): DesignElement;
 }

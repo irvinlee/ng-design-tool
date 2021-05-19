@@ -8,12 +8,13 @@ export class Renderer {
   private mouseHoverSubject: BehaviorSubject<string> = new BehaviorSubject('');
   private clickSubject: BehaviorSubject<string> = new BehaviorSubject('');
   private elementDragSubject: BehaviorSubject<ElementDragEvent> = new BehaviorSubject({} as ElementDragEvent);
-
+  private elementDropSubject: BehaviorSubject<ElementDragEvent> = new BehaviorSubject({} as ElementDragEvent);
   private draggedElementKey = '';
 
   mouseHoverObservable = this.mouseHoverSubject.asObservable();
   mouseClickObservable = this.clickSubject.asObservable();
   elementDragObservable = this.elementDragSubject.asObservable();
+  elementDropObservable = this.elementDropSubject.asObservable();
 
   // tslint:disable-next-line:variable-name
   constructor(private _elementRef: HTMLCanvasElement) {
@@ -76,6 +77,8 @@ export class Renderer {
   }
 
   private _onCanvasMouseUp(event: MouseEvent): void {
+    const {x, y} = this._getRelativeCursorCoordinates(event);
+    this.elementDropSubject.next({elementKey: this.draggedElementKey, x, y} as ElementDragEvent);
     this.draggedElementKey = '';
   }
 
