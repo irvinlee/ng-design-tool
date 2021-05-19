@@ -1,4 +1,5 @@
-import { DesignElement } from './types/design-element';
+import { Coordinates } from './types/coordinates';
+import { DesignElement } from './models/design-element';
 import { TextModel } from './models/text-model';
 import { generateRandomId } from './common/utils';
 import { DesignState } from './types/design-state';
@@ -105,5 +106,8 @@ export class DesignToolService {
     }
     this.designState.next({...currentDesign, elements: newElementsMap});
     this._selectedElement.next(newElementsMap.get(elementId));
+  }
+
+  moveElement(elementId: string, newCoordinates: Coordinates): void {
   }
 }

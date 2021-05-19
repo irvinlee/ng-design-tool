@@ -1,9 +1,4 @@
 import { Renderer } from './../renderer';
-import { TextModel } from './../../../models/text-model';
-import { Shape } from './../../../types/shape';
-import { Image } from './../../../types/image';
-import { Text } from './../../../types/text';
-import { StockImage } from './../../../types/stock-image';
 import { DesignToolService } from './../../../design-tool.service';
 import { Component, Input, AfterViewInit, OnDestroy } from '@angular/core';
 import { generateRandomId } from '../../../common/utils';

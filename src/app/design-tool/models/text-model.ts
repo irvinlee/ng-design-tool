@@ -1,5 +1,4 @@
-import { DesignElement } from './../types/design-element';
-import { Coordinates } from './../types/coordinates';
+import { DesignElement } from './design-element';
 import { Dimensions } from './../types/dimensions';
 import { TextFormat } from './../types/text-format';
 import { Text } from './../types/text';

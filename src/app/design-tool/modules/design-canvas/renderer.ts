@@ -1,9 +1,5 @@
-import { DesignElement } from './../../types/design-element';
-import { TextModel } from './../../models/text-model';
-import { Shape } from './../../types/shape';
-import { Image } from './../../types/image';
-import { StockImage } from './../../types/stock-image';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { DesignElement } from '../../models/design-element';
+import { BehaviorSubject } from 'rxjs';
 
 export class Renderer {
   private ctx: CanvasRenderingContext2D | undefined;
