@@ -1,3 +1,4 @@
+import { ImageModel } from './models/image-model';
 import { Coordinates } from './types/coordinates';
 import { DesignElement } from './models/design-element';
 import { TextModel } from './models/text-model';
@@ -44,8 +45,8 @@ export class DesignToolService {
     this.undoBuffer.push(this.designState.getValue());
     this.designState.next(newDesign);
     this.updateBufferLengths();
-    // console.log(this.undoBuffer);
-    // console.log(this.designState.getValue());
+    console.log(this.undoBuffer);
+    console.log(this.designState.getValue());
   }
 
   undo(): void {
@@ -74,6 +75,17 @@ export class DesignToolService {
     const elementsMap = new Map(currentDesign.elements);
     newTextElement.zIndex = currentDesign.elements.size;
     elementsMap.set(generateRandomId(), newTextElement);
+    this.updateCurrentDesign({...currentDesign, elements: elementsMap});
+  }
+
+  // for now, let's just use a static image by default...
+  insertImage(src = 'https://www.digitalroominc.com/uploads/1/0/3/1/103161570/editor/dri-logo_2.png?1516669567'): void {
+    // TODO: DRY this up...
+    const currentDesign = this.designState.getValue();
+    const newImageElement = new ImageModel(src);
+    const elementsMap = new Map(currentDesign.elements);
+    newImageElement.zIndex = currentDesign.elements.size;
+    elementsMap.set(generateRandomId(), newImageElement);
     this.updateCurrentDesign({...currentDesign, elements: elementsMap});
   }
 

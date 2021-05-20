@@ -16,4 +16,8 @@ export class InsertItemsPanelComponent implements OnInit {
   onInsertText(): void {
     this.designToolService.insertText();
   }
+
+  onInsertImage(): void {
+    this.designToolService.insertImage();
+  }
 }
