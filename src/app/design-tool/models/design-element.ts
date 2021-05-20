@@ -5,7 +5,7 @@ export abstract class DesignElement extends CanvasGenericElement {
   isHovered = false;
   isSelected = false;
   zIndex = 0;
-  resizeHandles: ResizeHandles | undefined;
+  resizeHandles = new ResizeHandles();
 
   constructor() {
     super();
@@ -23,7 +23,7 @@ export abstract class DesignElement extends CanvasGenericElement {
   }
 
   displayResizeHandles(canvasContext: CanvasRenderingContext2D): void {
-    this.resizeHandles = new ResizeHandles(this.coordinates.left - 5, this.coordinates.top - 5, this.width + 10, this.height + 5);
+    this.resizeHandles.setPosition(this.coordinates.left - 5, this.coordinates.top - 5, this.width + 10, this.height + 5);
     this.resizeHandles.renderToCanvas(canvasContext);
   }
 

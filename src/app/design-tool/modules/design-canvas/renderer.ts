@@ -1,3 +1,4 @@
+import { ResizeHandles } from './../../models/resize-handles';
 import { ElementDragEvent } from './../../types/element-drag-event';
 import { DesignElement } from '../../models/design-element';
 import { BehaviorSubject } from 'rxjs';
@@ -51,6 +52,10 @@ export class Renderer {
           hoveredKey = key;
         }
       }
+    }
+
+    if (hoveredKey) {
+
     }
 
     return hoveredKey;

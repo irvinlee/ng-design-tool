@@ -1,3 +1,4 @@
+import { ElementMouseHandles } from './../types/element-mouse-handles.enum';
 import { MouseHandle } from './mouse-handle';
 export class ResizeHandles {
   private topLeftHandle = new MouseHandle();
@@ -5,7 +6,9 @@ export class ResizeHandles {
   private bottomLeftHandle = new MouseHandle();
   private bottomRightHandle = new MouseHandle();
 
-  constructor(x: number, y: number, width: number, height: number) {
+  constructor() {}
+
+  setPosition(x: number, y: number, width: number, height: number): void{
     this.topLeftHandle.coordinates.left = x;
     this.topLeftHandle.coordinates.top = y;
 
@@ -24,5 +27,25 @@ export class ResizeHandles {
     this.topRightHandle.renderToCanvas(canvasContext);
     this.bottomLeftHandle.renderToCanvas(canvasContext);
     this.bottomRightHandle.renderToCanvas(canvasContext);
+  }
+
+  getHoveredMouseHandle(mouseX: number, mouseY: number): string {
+    if (this.topLeftHandle.checkIsHovered(mouseX, mouseY)) {
+      return ElementMouseHandles.TOP_LEFT;
+    }
+
+    if (this.topRightHandle.checkIsHovered(mouseX, mouseY)) {
+      return ElementMouseHandles.TOP_RIGHT;
+    }
+
+    if (this.bottomLeftHandle.checkIsHovered(mouseX, mouseY)) {
+      return ElementMouseHandles.BOTTOM_LEFT;
+    }
+
+    if (this.bottomRightHandle.checkIsHovered(mouseX, mouseY)) {
+      return ElementMouseHandles.BOTTOM_RIGHT;
+    }
+
+    return '';
   }
 }
