@@ -38,6 +38,8 @@ export class DesignToolService {
   private updateCurrentDesign(newDesign: DesignState): void {
     this.redoBuffer = [];
 
+    console.log(newDesign);
+
     if (this.undoBuffer.length > this.MAX_BUFFER_LENGTH) {
       this.undoBuffer.shift();
     }
@@ -45,8 +47,10 @@ export class DesignToolService {
     this.undoBuffer.push(this.designState.getValue());
     this.designState.next(newDesign);
     this.updateBufferLengths();
-    console.log(this.undoBuffer);
-    console.log(this.designState.getValue());
+  }
+
+  private createNewMapFromElements(): Map<string,DesignElement> {
+    return new Map(this.designState.getValue().elements);
   }
 
   undo(): void {
@@ -102,6 +106,7 @@ export class DesignToolService {
       }
       newElementsMap.set(key, asDesignElement);
     }
+
     this.designState.next({...currentDesign, elements: newElementsMap});
   }
 
@@ -123,23 +128,39 @@ export class DesignToolService {
   }
 
   dragElement(elementId: string, newCoordinates: Coordinates): void {
-    const currentDesign = this.designState.getValue();
-    const newElementsMap = new Map(currentDesign.elements);
+    const newElementsMap = this.createNewMapFromElements();
     const elementToUpdate = newElementsMap.get(elementId);
 
     (elementToUpdate as DesignElement).coordinates = {...newCoordinates};
     newElementsMap.set(elementId, elementToUpdate as DesignElement);
-    this.designState.next({...currentDesign, elements: newElementsMap});
+    this.designState.next({...this.designState.getValue(), elements: newElementsMap});
   }
 
   // TODO: DRY this up later..
   dropElement(elementId: string, newCoordinates: Coordinates): void {
-    const currentDesign = this.designState.getValue();
-    const newElementsMap = new Map(currentDesign.elements);
+    const newElementsMap = this.createNewMapFromElements();
     const elementToUpdate = newElementsMap.get(elementId)?.clone();
 
     (elementToUpdate as DesignElement).coordinates = {...newCoordinates};
     newElementsMap.set(elementId, elementToUpdate as DesignElement);
-    this.updateCurrentDesign({...currentDesign, elements: newElementsMap});
+    this.designState.next({...this.designState.getValue(), elements: newElementsMap});
+  }
+
+  resizeElement(elementId: string, mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+    const newElementsMap = this.createNewMapFromElements();
+    const elementToUpdate = newElementsMap.get(elementId)?.clone();
+
+    (elementToUpdate as DesignElement).resize(mouseHandleUsed, mouseX, mouseY);
+    newElementsMap.set(elementId, elementToUpdate as DesignElement);
+    this.designState.next({...this.designState.getValue(), elements: newElementsMap});
+  }
+
+  commitResizeElement(elementId: string, mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+    const newElementsMap = this.createNewMapFromElements();
+    const elementToUpdate = newElementsMap.get(elementId)?.clone();
+
+    (elementToUpdate as DesignElement).resize(mouseHandleUsed, mouseX, mouseY);
+    newElementsMap.set(elementId, elementToUpdate as DesignElement);
+    this.updateCurrentDesign({...this.designState.getValue(), elements: newElementsMap});
   }
 }

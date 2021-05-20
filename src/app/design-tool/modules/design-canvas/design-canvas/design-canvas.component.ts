@@ -51,23 +51,37 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     this._canvasElement = document.getElementById(this.id) as HTMLCanvasElement;
     this._renderer = new Renderer(this._canvasElement);
     this._subscriptions.push(this._renderer.mouseHoverObservable.subscribe((hoveredEl) => {
-      this.updateCanvasMouseCursor(hoveredEl);
-      this.designToolService.setHoveredElement(hoveredEl.key);
+      if (hoveredEl.key) {
+        this.updateCanvasMouseCursor(hoveredEl);
+        this.designToolService.setHoveredElement(hoveredEl.key);
+      }
     }));
 
     this._subscriptions.push(this._renderer.mouseClickObservable.subscribe((clickedEl) => {
-      this.designToolService.selectElement(clickedEl);
+      if (clickedEl) {
+        this.designToolService.selectElement(clickedEl);
+      }
     }));
 
     this._subscriptions.push(this._renderer.elementDragObservable.subscribe((event: ElementDragEvent) => {
       if (event.element?.key)  {
-        this.designToolService.dragElement(event.element?.key, {left: event.x, top: event.y});
+        if (!event.element.mouseHandle) {
+          this.designToolService.dragElement(event.element?.key, {left: event.x, top: event.y});
+        } else {
+          const { key, mouseHandle } = event.element;
+          this.designToolService.resizeElement(key, mouseHandle, event.x, event.y);
+        }
       }
     }));
 
     this._subscriptions.push(this._renderer.elementDropObservable.subscribe((event: ElementDragEvent) => {
       if (event.element?.key)  {
-        this.designToolService.dropElement(event.element?.key, {left: event.x, top: event.y});
+        if (!event.element.mouseHandle) {
+          this.designToolService.dropElement(event.element?.key, {left: event.x, top: event.y});
+        } else {
+          const { key, mouseHandle } = event.element;
+          this.designToolService.commitResizeElement(key, mouseHandle, event.x, event.y);
+        }
       }
     }));
   }

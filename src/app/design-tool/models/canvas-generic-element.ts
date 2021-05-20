@@ -11,8 +11,16 @@ export abstract class CanvasGenericElement {
     return this.dimensions?.height || 0;
   }
 
+  set height(newHeight: number) {
+    this.dimensions.height = newHeight;
+  }
+
   get width(): number {
     return this.dimensions?.width || 0;
+  }
+
+  set width(newWidth: number) {
+    this.dimensions.width = newWidth;
   }
 
   checkIsHovered(mouseX: number, mouseY: number): boolean {
