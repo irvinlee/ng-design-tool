@@ -1,29 +1,14 @@
-import { Dimensions } from './../types/dimensions';
-import { Coordinates } from '../types/coordinates';
+import { ResizeHandles } from './resize-handles';
+import { CanvasGenericElement } from './canvas-generic-element';
 
-export abstract class DesignElement {
+export abstract class DesignElement extends CanvasGenericElement {
   isHovered = false;
   isSelected = false;
-
-  coordinates = {top: 100, left: 100} as Coordinates;
-  dimensions: Dimensions = {} as Dimensions;
   zIndex = 0;
+  resizeHandles: ResizeHandles | undefined;
 
-  constructor() {}
-
-  get height(): number {
-    return this.dimensions?.height || 0;
-  }
-
-  get width(): number {
-    return this.dimensions?.width || 0;
-  }
-
-  checkIsHovered(mouseX: number, mouseY: number): boolean {
-    return mouseX >= this.coordinates.left - 5 &&
-          mouseX <= this.coordinates.left + this.width + 10 &&
-          mouseY >= this.coordinates.top - 5 &&
-          mouseY <= this.coordinates.top + this.height + 10;
+  constructor() {
+    super();
   }
 
   displayOutline(canvasContext: CanvasRenderingContext2D): void {
@@ -35,6 +20,11 @@ export abstract class DesignElement {
       this.height + 5
     );
     canvasContext.stroke();
+  }
+
+  displayResizeHandles(canvasContext: CanvasRenderingContext2D): void {
+    this.resizeHandles = new ResizeHandles(this.coordinates.left - 5, this.coordinates.top - 5, this.width + 10, this.height + 5);
+    this.resizeHandles.renderToCanvas(canvasContext);
   }
 
   abstract renderToCanvas(canvasContext: CanvasRenderingContext2D): void;

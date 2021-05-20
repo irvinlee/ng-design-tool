@@ -22,6 +22,10 @@ export class ImageModel extends DesignElement implements Image {
     if (this.isHovered || this.isSelected) {
       this.displayOutline(canvasContext);
     }
+
+    if (this.isSelected) {
+      this.displayResizeHandles(canvasContext);
+    }
   }
 
   clone(): ImageModel {

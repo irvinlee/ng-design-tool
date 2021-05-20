@@ -36,6 +36,10 @@ export class TextModel extends DesignElement implements Text{
     if (this.isHovered || this.isSelected) {
       this.displayOutline(canvasContext);
     }
+
+    if(this.isSelected) {
+      this.displayResizeHandles(canvasContext);
+    }
   }
 
   clone(): TextModel {
