@@ -30,13 +30,13 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   ngAfterViewInit(): void {
     this._canvasElement = document.getElementById(this.id) as HTMLCanvasElement;
     this._renderer = new Renderer(this._canvasElement);
-    this._subscriptions.push(this._renderer.mouseHoverObservable.subscribe((hoveredEls) => {
-      if (hoveredEls.length) {
+    this._subscriptions.push(this._renderer.mouseHoverObservable.subscribe((hoveredEl) => {
+      if (hoveredEl.key) {
         (document.getElementById(this.id) as HTMLElement).style.cursor = 'pointer';
       } else {
         (document.getElementById(this.id) as HTMLElement).style.cursor = 'default';
       }
-      this.designToolService.setHoveredElement(hoveredEls);
+      this.designToolService.setHoveredElement(hoveredEl.key);
     }));
 
     this._subscriptions.push(this._renderer.mouseClickObservable.subscribe((clickedEl) => {
@@ -44,14 +44,14 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     }));
 
     this._subscriptions.push(this._renderer.elementDragObservable.subscribe((event: ElementDragEvent) => {
-      if (event.elementKey)  {
-        this.designToolService.dragElement(event.elementKey, {left: event.x, top: event.y});
+      if (event.element?.key)  {
+        this.designToolService.dragElement(event.element?.key, {left: event.x, top: event.y});
       }
     }));
 
     this._subscriptions.push(this._renderer.elementDropObservable.subscribe((event: ElementDragEvent) => {
-      if (event.elementKey)  {
-        this.designToolService.dropElement(event.elementKey, {left: event.x, top: event.y});
+      if (event.element?.key)  {
+        this.designToolService.dropElement(event.element?.key, {left: event.x, top: event.y});
       }
     }));
   }

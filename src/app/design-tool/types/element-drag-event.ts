@@ -1,5 +1,7 @@
+import { HoveredElement } from './hovered-element';
+
 export interface ElementDragEvent {
-  elementKey: string;
+  element: HoveredElement;
   x: number;
   y: number;
 }

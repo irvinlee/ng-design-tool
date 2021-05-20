@@ -1,4 +1,5 @@
-import { ResizeHandles } from './../../models/resize-handles';
+import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
+import { HoveredElement } from '../../types/hovered-element';
 import { ElementDragEvent } from './../../types/element-drag-event';
 import { DesignElement } from '../../models/design-element';
 import { BehaviorSubject } from 'rxjs';
@@ -6,11 +7,11 @@ import { BehaviorSubject } from 'rxjs';
 export class Renderer {
   private ctx: CanvasRenderingContext2D | undefined;
   private elements: Map<string, DesignElement> = new Map();
-  private mouseHoverSubject: BehaviorSubject<string> = new BehaviorSubject('');
+  private mouseHoverSubject: BehaviorSubject<HoveredElement> = new BehaviorSubject({key: ''});
   private clickSubject: BehaviorSubject<string> = new BehaviorSubject('');
   private elementDragSubject: BehaviorSubject<ElementDragEvent> = new BehaviorSubject({} as ElementDragEvent);
   private elementDropSubject: BehaviorSubject<ElementDragEvent> = new BehaviorSubject({} as ElementDragEvent);
-  private draggedElementKey = '';
+  private hoveredElement: HoveredElement = {key: ''};
 
   mouseHoverObservable = this.mouseHoverSubject.asObservable();
   mouseClickObservable = this.clickSubject.asObservable();
@@ -43,48 +44,65 @@ export class Renderer {
     }
   }
 
-  private _getHoveredElement(mouseX: number, mouseY: number): string {
-    let hoveredKey = '';
+  private _getHoveredElement(mouseX: number, mouseY: number): HoveredElement {
+    let hoveredElementKey = '';
 
     for ( const [ key, value ] of this.elements.entries()) {
       if (value.checkIsHovered(mouseX, mouseY)) {
-        if (!hoveredKey || (this.elements.get(hoveredKey) as DesignElement)?.zIndex < value.zIndex) {
-          hoveredKey = key;
+        if (!hoveredElementKey || (this.elements.get(hoveredElementKey) as DesignElement)?.zIndex < value.zIndex) {
+          hoveredElementKey = key;
         }
       }
     }
 
-    if (hoveredKey) {
+    if (hoveredElementKey) {
+      const theElement = this.elements.get(hoveredElementKey);
 
+      return {
+        key: hoveredElementKey,
+        mouseHandle: theElement?.resizeHandles.getHoveredMouseHandle(mouseX, mouseY) as ElementMouseHandles
+      };
     }
 
-    return hoveredKey;
+    return {key: ''};
   }
 
   private _onCanvasMouseMove(event: MouseEvent): void {
     const {x, y} = this._getRelativeCursorCoordinates(event);
 
-    if (!this.draggedElementKey) { // if the user is not dragging an element
+    if (!this.hoveredElement.key) { // if the user is not dragging an element
       this.mouseHoverSubject.next(this._getHoveredElement(x, y));
     } else {
-      this.elementDragSubject.next({elementKey: this.draggedElementKey, x, y } as ElementDragEvent);
+      const dragEvent = {
+        element: {...this.hoveredElement},
+        x,
+        y
+      } as ElementDragEvent;
+
+      this.elementDragSubject.next(dragEvent);
     }
   }
 
   private _onCanvasClick(event: MouseEvent): void {
     const {x, y} = this._getRelativeCursorCoordinates(event);
-    this.clickSubject.next(this._getHoveredElement(x, y));
+    this.clickSubject.next(this._getHoveredElement(x, y).key);
   }
 
   private _onCanvasMouseDown(event: MouseEvent): void {
     const {x, y} = this._getRelativeCursorCoordinates(event);
-    this.draggedElementKey = this._getHoveredElement(x, y);
+    this.hoveredElement = this._getHoveredElement(x, y);
   }
 
   private _onCanvasMouseUp(event: MouseEvent): void {
     const {x, y} = this._getRelativeCursorCoordinates(event);
-    this.elementDropSubject.next({elementKey: this.draggedElementKey, x, y} as ElementDragEvent);
-    this.draggedElementKey = '';
+    const dragEvent = {
+      element: {...this.hoveredElement},
+      x,
+      y
+    } as ElementDragEvent;
+
+    this.elementDropSubject.next(dragEvent);
+    this.hoveredElement = {key: ''};
   }
 
   private _getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {
