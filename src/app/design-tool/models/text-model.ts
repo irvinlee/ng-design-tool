@@ -17,7 +17,6 @@ export class TextModel extends DesignElement implements Text{
     isItalic: false,
     alignment: TextAlign.LEFT
   } as TextFormat;
-  dimensions = {} as Dimensions;
 
   constructor() {
     super();
@@ -27,19 +26,15 @@ export class TextModel extends DesignElement implements Text{
     canvasContext.textBaseline = 'bottom';
     canvasContext.fillStyle = this.format.color;
     canvasContext.font = `${this.format.size}px ${this.format.font}`;
-    this.metrics = canvasContext.measureText(this.value);
+    const metrics = canvasContext.measureText(this.value);
 
-    canvasContext.fillText(this.value, this.coordinates.left, this.coordinates.top);
+    this.dimensions.width = metrics.width;
+    this.dimensions.height = metrics.actualBoundingBoxAscent;
+
+    canvasContext.fillText(this.value, this.coordinates.left, this.coordinates.top + this.dimensions.height);
 
     if (this.isHovered || this.isSelected) {
-      canvasContext.beginPath();
-      canvasContext.rect(
-        this.coordinates.left - 5,
-        this.coordinates.top - this.metrics.actualBoundingBoxAscent - 5,
-        this.metrics.width + 10,
-        this.metrics.actualBoundingBoxAscent + 5
-      );
-      canvasContext.stroke();
+      this.displayOutline(canvasContext);
     }
   }
 
@@ -51,7 +46,6 @@ export class TextModel extends DesignElement implements Text{
     theClone.dimensions = {...this.dimensions};
     theClone.isHovered = this.isHovered;
     theClone.isSelected = this.isSelected;
-    theClone.metrics = {...this.metrics};
     theClone.coordinates = {...this.coordinates};
     theClone.zIndex = this.zIndex;
 

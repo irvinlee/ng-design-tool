@@ -1,19 +1,27 @@
-import { Dimensions } from './../types/dimensions';
 import { Image } from './../types/image';
 import { DesignElement } from './design-element';
 
 export class ImageModel extends DesignElement implements Image {
-  dimensions = {} as Dimensions;
   private imageObj: HTMLImageElement | undefined;
 
   constructor(public src: string) {
     super();
     this.imageObj = new Image();
+
+    this.imageObj.addEventListener('load', () => {
+      this.dimensions.width = this.imageObj?.naturalWidth;
+      this.dimensions.height = this.imageObj?.naturalHeight;
+    });
+
     this.imageObj.src = this.src;
   }
 
   renderToCanvas(canvasContext: CanvasRenderingContext2D): void {
-    canvasContext.drawImage(this.imageObj as HTMLImageElement, 100, 100);
+    canvasContext.drawImage(this.imageObj as HTMLImageElement, this.coordinates.left, this.coordinates.top, this.width, this.height);
+
+    if (this.isHovered || this.isSelected) {
+      this.displayOutline(canvasContext);
+    }
   }
 
   clone(): ImageModel {
@@ -22,7 +30,6 @@ export class ImageModel extends DesignElement implements Image {
     theClone.dimensions = {...this.dimensions};
     theClone.isHovered = this.isHovered;
     theClone.isSelected = this.isSelected;
-    theClone.metrics = {...this.metrics};
     theClone.coordinates = {...this.coordinates};
     theClone.zIndex = this.zIndex;
 
