@@ -1,3 +1,5 @@
+import { ElementMouseHandles } from './../../../types/element-mouse-handles.enum';
+import { HoveredElement } from './../../../types/hovered-element';
 import { ElementDragEvent } from './../../../types/element-drag-event';
 import { Renderer } from './../renderer';
 import { DesignToolService } from './../../../design-tool.service';
@@ -27,15 +29,29 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     });
   }
 
+  private updateCanvasMouseCursor(hoveredEl: HoveredElement): void {
+    let cursor = 'default';
+
+    if (hoveredEl.key) {
+      if (!hoveredEl.mouseHandle) {
+        cursor = 'pointer';
+      } else {
+        if ([ElementMouseHandles.TOP_LEFT, ElementMouseHandles.BOTTOM_RIGHT].indexOf(hoveredEl.mouseHandle) >= 0) {
+          cursor = 'nwse-resize';
+        } else {
+          cursor = 'nesw-resize';
+        }
+      }
+    }
+
+    (document.getElementById(this.id) as HTMLElement).style.cursor = cursor;
+  }
+
   ngAfterViewInit(): void {
     this._canvasElement = document.getElementById(this.id) as HTMLCanvasElement;
     this._renderer = new Renderer(this._canvasElement);
     this._subscriptions.push(this._renderer.mouseHoverObservable.subscribe((hoveredEl) => {
-      if (hoveredEl.key) {
-        (document.getElementById(this.id) as HTMLElement).style.cursor = 'pointer';
-      } else {
-        (document.getElementById(this.id) as HTMLElement).style.cursor = 'default';
-      }
+      this.updateCanvasMouseCursor(hoveredEl);
       this.designToolService.setHoveredElement(hoveredEl.key);
     }));
 
