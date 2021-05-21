@@ -28,6 +28,8 @@ export class DesignToolService {
   readonly redoBufferLength: Observable<number> = this._redoBufferLength.asObservable();
   readonly selectedElement: Observable<DesignElement|undefined> = this._selectedElement.asObservable();
 
+  isResizingElement = false;
+
   constructor() {}
 
   private updateBufferLengths(): void {
@@ -45,12 +47,17 @@ export class DesignToolService {
     }
 
     this.undoBuffer.push(this.designState.getValue());
+    console.log(this.undoBuffer);
     this.designState.next(newDesign);
     this.updateBufferLengths();
   }
 
   private createNewMapFromElements(): Map<string,DesignElement> {
     return new Map(this.designState.getValue().elements);
+  }
+
+  private getSelectedElement(): DesignElement {
+    return this._selectedElement.getValue();
   }
 
   undo(): void {
@@ -94,6 +101,10 @@ export class DesignToolService {
   }
 
   setHoveredElement(elementId: string): void {
+    if(this.isResizingElement) {
+      return;
+    }
+
     const currentDesign = this.designState.getValue();
     const newElementsMap = new Map();
 
@@ -147,20 +158,23 @@ export class DesignToolService {
   }
 
   resizeElement(elementId: string, mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+    this.isResizingElement = true;
     const newElementsMap = this.createNewMapFromElements();
-    const elementToUpdate = newElementsMap.get(elementId)?.clone();
-
-    (elementToUpdate as DesignElement).resize(mouseHandleUsed, mouseX, mouseY);
+    const elementToUpdate = this.getSelectedElement();
+    
+    elementToUpdate.resize(mouseHandleUsed, mouseX, mouseY);
+    
     newElementsMap.set(elementId, elementToUpdate as DesignElement);
     this.designState.next({...this.designState.getValue(), elements: newElementsMap});
   }
 
-  commitResizeElement(elementId: string, mouseHandleUsed: string, mouseX: number, mouseY: number): void {
-    const newElementsMap = this.createNewMapFromElements();
-    const elementToUpdate = newElementsMap.get(elementId)?.clone();
-
-    (elementToUpdate as DesignElement).resize(mouseHandleUsed, mouseX, mouseY);
-    newElementsMap.set(elementId, elementToUpdate as DesignElement);
-    this.updateCurrentDesign({...this.designState.getValue(), elements: newElementsMap});
+  endResize(elementId: string): void {
+    this.isResizingElement = false;
+    this.updateCurrentDesign(this.designState.getValue());
+    // create a clone of the selected element
+    // to create a new reference to it so that
+    // the next updates won't affect the ones stored
+    // in the undo buffer
+    this._selectedElement.next(this.getSelectedElement().clone());
   }
 }

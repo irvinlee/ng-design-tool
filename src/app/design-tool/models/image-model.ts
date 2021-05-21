@@ -1,3 +1,4 @@
+import { ElementMouseHandles } from '../types/element-mouse-handles.enum';
 import { Image } from './../types/image';
 import { DesignElement } from './design-element';
 
@@ -14,6 +15,39 @@ export class ImageModel extends DesignElement implements Image {
     });
 
     this.imageObj.src = this.src;
+  }
+
+  private resizeNW(mouseX: number, mouseY: number): void {
+    this.width = this.width + (this.coordinates.left - mouseX);
+    this.height = this.height + (this.coordinates.top - mouseY);
+    this.coordinates.left = mouseX;
+    this.coordinates.top = mouseY;
+  }
+
+  private resizeNE(mouseX: number, mouseY: number): void {
+    this.width = this.width - (this.coordinates.left + this.width - mouseX);
+    this.height = this.height - (this.coordinates.top + this.height - mouseY);
+  }
+
+  private resizeSW(mouseX: number, mouseY: number): void {
+    this.width = this.width + (this.coordinates.left - mouseX);
+    this.height = this.height + (this.coordinates.top - mouseY);
+    // this.coordinates.left = mouseX;
+    // this.coordinates.top = mouseY;
+  }
+
+  private resizeSE(mouseX: number, mouseY: number): void {
+    this.width = this.width - (this.coordinates.left + this.width - mouseX);
+    this.height = this.height - (this.coordinates.top + this.height - mouseY);
+  }
+  
+  resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+    switch (mouseHandleUsed) {
+      case ElementMouseHandles.TOP_LEFT: this.resizeNW(mouseX, mouseY); break;
+      case ElementMouseHandles.TOP_RIGHT: this.resizeNE(mouseX, mouseY); break;
+      case ElementMouseHandles.BOTTOM_LEFT: this.resizeSW(mouseX, mouseY); break;
+      case ElementMouseHandles.BOTTOM_RIGHT: this.resizeSE(mouseX, mouseY); break;
+    }
   }
 
   renderToCanvas(canvasContext: CanvasRenderingContext2D): void {

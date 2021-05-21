@@ -3,6 +3,7 @@ import { Dimensions } from './../types/dimensions';
 import { TextFormat } from './../types/text-format';
 import { Text } from './../types/text';
 import { TextAlign } from '../types/text-align.enum';
+import { ElementMouseHandles } from '../types/element-mouse-handles.enum';
 
 export class TextModel extends DesignElement implements Text{
   value = 'New Text Element';
@@ -40,6 +41,40 @@ export class TextModel extends DesignElement implements Text{
     if(this.isSelected) {
       this.displayResizeHandles(canvasContext);
     }
+  }
+
+  private resizeNW(mouseX: number, mouseY: number): void {
+    this.width = this.width + (this.coordinates.left - mouseX);
+    this.height = this.height + (this.coordinates.top - mouseY);
+    this.coordinates.left = mouseX;
+    this.coordinates.top = mouseY;
+  }
+
+  private resizeNE(mouseX: number, mouseY: number): void {
+    this.width = this.width - (this.coordinates.left + this.width - mouseX);
+    this.height = this.height - (this.coordinates.top + this.height - mouseY);
+  }
+
+  private resizeSW(mouseX: number, mouseY: number): void {
+    this.width = this.width + (this.coordinates.left - mouseX);
+    this.height = this.height + (this.coordinates.top - mouseY);
+    // this.coordinates.left = mouseX;
+    // this.coordinates.top = mouseY;
+  }
+
+  private resizeSE(mouseX: number, mouseY: number): void {
+    this.width = this.width - (this.coordinates.left + this.width - mouseX);
+    this.height = this.height - (this.coordinates.top + this.height - mouseY);
+  }
+  
+  resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+    switch (mouseHandleUsed) {
+      case ElementMouseHandles.TOP_LEFT: this.resizeNW(mouseX, mouseY); break;
+      case ElementMouseHandles.TOP_RIGHT: this.resizeNE(mouseX, mouseY); break;
+      case ElementMouseHandles.BOTTOM_LEFT: this.resizeSW(mouseX, mouseY); break;
+      case ElementMouseHandles.BOTTOM_RIGHT: this.resizeSE(mouseX, mouseY); break;
+    }
+    console.log(this);
   }
 
   clone(): TextModel {

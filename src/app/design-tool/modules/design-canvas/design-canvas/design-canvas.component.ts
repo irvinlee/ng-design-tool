@@ -79,8 +79,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
         if (!event.element.mouseHandle) {
           this.designToolService.dropElement(event.element?.key, {left: event.x, top: event.y});
         } else {
-          const { key, mouseHandle } = event.element;
-          this.designToolService.commitResizeElement(key, mouseHandle, event.x, event.y);
+          this.designToolService.endResize(event.element.key);
         }
       }
     }));
