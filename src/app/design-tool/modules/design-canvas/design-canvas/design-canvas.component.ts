@@ -60,6 +60,8 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     this._subscriptions.push(this._renderer.mouseClickObservable.subscribe((clickedEl) => {
       if (clickedEl) {
         this.designToolService.selectElement(clickedEl);
+      } else {
+        this.designToolService.unSelect();
       }
     }));
 

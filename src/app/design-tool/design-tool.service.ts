@@ -17,7 +17,7 @@ export class DesignToolService {
   // tslint:disable-next-line:variable-name
   private _redoBufferLength: BehaviorSubject<number> = new BehaviorSubject(0);
   // tslint:disable-next-line:variable-name
-  private _selectedElement: BehaviorSubject<DesignElement> = new BehaviorSubject({} as DesignElement);
+  private _selectedElement: BehaviorSubject<DesignElement|undefined> = new BehaviorSubject<DesignElement|undefined>(undefined);
 
   private undoBuffer: Array<DesignState> = [];
   private redoBuffer: Array<DesignState> = [];
@@ -56,7 +56,7 @@ export class DesignToolService {
     return new Map(this.designState.getValue().elements);
   }
 
-  private getSelectedElement(): DesignElement {
+  private getSelectedElement(): DesignElement | undefined {
     return this._selectedElement.getValue();
   }
 
@@ -138,6 +138,10 @@ export class DesignToolService {
     this._selectedElement.next(newElementsMap.get(elementId));
   }
 
+  unSelect(): void {
+    this.selectElement('');
+  }
+
   dragElement(elementId: string, newCoordinates: Coordinates): void {
     const newElementsMap = this.createNewMapFromElements();
     const elementToUpdate = newElementsMap.get(elementId);
@@ -162,19 +166,26 @@ export class DesignToolService {
     const newElementsMap = this.createNewMapFromElements();
     const elementToUpdate = this.getSelectedElement();
     
-    elementToUpdate.resize(mouseHandleUsed, mouseX, mouseY);
+    if(!!elementToUpdate) {
+      elementToUpdate.resize(mouseHandleUsed, mouseX, mouseY);
     
-    newElementsMap.set(elementId, elementToUpdate as DesignElement);
-    this.designState.next({...this.designState.getValue(), elements: newElementsMap});
+      newElementsMap.set(elementId, elementToUpdate as DesignElement);
+      this.designState.next({...this.designState.getValue(), elements: newElementsMap});
+    }
   }
 
   endResize(elementId: string): void {
     this.isResizingElement = false;
     this.updateCurrentDesign(this.designState.getValue());
-    // create a clone of the selected element
-    // to create a new reference to it so that
-    // the next updates won't affect the ones stored
-    // in the undo buffer
-    this._selectedElement.next(this.getSelectedElement().clone());
+    
+    const elementToUpdate = this.getSelectedElement();
+
+    if(!!elementToUpdate) {
+      // create a clone of the selected element
+      // to create a new reference to it so that
+      // the next updates won't affect the ones stored
+      // in the undo buffer
+      this._selectedElement.next(elementToUpdate.clone());  
+    }
   }
 }
