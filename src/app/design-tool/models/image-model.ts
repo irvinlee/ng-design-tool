@@ -4,6 +4,8 @@ import { DesignElement } from './design-element';
 
 export class ImageModel extends DesignElement implements Image {
   private imageObj: HTMLImageElement | undefined;
+  
+  isImageLoaded = false;
 
   constructor(public src: string) {
     super();
@@ -12,6 +14,7 @@ export class ImageModel extends DesignElement implements Image {
     this.imageObj.addEventListener('load', () => {
       this.dimensions.width = this.imageObj?.naturalWidth;
       this.dimensions.height = this.imageObj?.naturalHeight;
+      this.isImageLoaded = true;
     });
 
     this.imageObj.src = this.src;
@@ -51,8 +54,13 @@ export class ImageModel extends DesignElement implements Image {
   }
 
   renderToCanvas(canvasContext: CanvasRenderingContext2D): void {
-    canvasContext.drawImage(this.imageObj as HTMLImageElement, this.coordinates.left, this.coordinates.top, this.width, this.height);
+    if (!this.isImageLoaded) {
+      // image not yet ready.. try again a bit later.
+      setTimeout(() => this.renderToCanvas(canvasContext), 200);
+    }
 
+    canvasContext.drawImage(this.imageObj as HTMLImageElement, this.coordinates.left, this.coordinates.top, this.width, this.height);
+    
     if (this.isHovered || this.isSelected) {
       this.displayOutline(canvasContext);
     }
@@ -70,7 +78,8 @@ export class ImageModel extends DesignElement implements Image {
     theClone.isSelected = this.isSelected;
     theClone.coordinates = {...this.coordinates};
     theClone.zIndex = this.zIndex;
-
+    theClone.isImageLoaded = true;
+    
     return theClone;
   }
 }
