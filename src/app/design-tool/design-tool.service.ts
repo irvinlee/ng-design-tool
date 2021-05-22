@@ -139,6 +139,7 @@ export class DesignToolService {
   }
 
   unSelect(): void {
+    this.isResizingElement = false;
     this.selectElement('');
     this.setHoveredElement('');
   }

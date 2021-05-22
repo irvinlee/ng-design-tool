@@ -50,11 +50,9 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   ngAfterViewInit(): void {
     this._canvasElement = document.getElementById(this.id) as HTMLCanvasElement;
     this._renderer = new Renderer(this._canvasElement);
-    this._subscriptions.push(this._renderer.mouseHoverObservable.subscribe((hoveredEl) => {
-      if (hoveredEl.key) {
-        this.updateCanvasMouseCursor(hoveredEl);
-        this.designToolService.setHoveredElement(hoveredEl.key);
-      }
+    this._subscriptions.push(this._renderer.mouseHoverObservable.subscribe((hoveredEl) => {      
+      this.updateCanvasMouseCursor(hoveredEl);
+      this.designToolService.setHoveredElement(hoveredEl?.key);
     }));
 
     this._subscriptions.push(this._renderer.mouseClickObservable.subscribe((clickedEl) => {
