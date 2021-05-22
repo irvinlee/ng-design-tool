@@ -125,6 +125,8 @@ export class DesignToolService {
     const currentDesign = this.designState.getValue();
     const newElementsMap = new Map();
 
+    console.log(currentDesign);
+
     for (const [key, value] of currentDesign.elements.entries()) {
       const asDesignElement = (value as DesignElement);
       if (key === elementId) {

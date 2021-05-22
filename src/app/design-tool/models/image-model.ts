@@ -21,22 +21,27 @@ export class ImageModel extends DesignElement implements Image {
   }
 
   private resizeNW(mouseX: number, mouseY: number): void {
-    this.width = this.width + (this.coordinates.left - mouseX);
-    this.height = this.height + (this.coordinates.top - mouseY);
+    const oldYCoord = this.coordinates.top;
+    const oldXCoord = this.coordinates.left;
     this.coordinates.left = mouseX;
     this.coordinates.top = mouseY;
+
+    this.width = this.width + (oldXCoord - this.coordinates.left);
+    this.height = this.height + (oldYCoord - this.coordinates.top);
   }
 
   private resizeNE(mouseX: number, mouseY: number): void {
+    const oldYCoord = this.coordinates.top;
+    this.coordinates.top = mouseY;
     this.width = this.width - (this.coordinates.left + this.width - mouseX);
-    this.height = this.height - (this.coordinates.top + this.height - mouseY);
+    this.height = this.height + (oldYCoord - this.coordinates.top);
   }
 
   private resizeSW(mouseX: number, mouseY: number): void {
-    this.width = this.width + (this.coordinates.left - mouseX);
-    this.height = this.height + (this.coordinates.top - mouseY);
-    // this.coordinates.left = mouseX;
-    // this.coordinates.top = mouseY;
+    const oldXCoord = this.coordinates.left;
+    this.coordinates.left = mouseX;
+    this.width = this.width + (oldXCoord - this.coordinates.left);
+    this.height = this.height - (this.coordinates.top + this.height - mouseY);
   }
 
   private resizeSE(mouseX: number, mouseY: number): void {
