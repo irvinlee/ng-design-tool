@@ -140,6 +140,7 @@ export class DesignToolService {
 
   unSelect(): void {
     this.selectElement('');
+    this.setHoveredElement('');
   }
 
   dragElement(elementId: string, newCoordinates: Coordinates): void {
