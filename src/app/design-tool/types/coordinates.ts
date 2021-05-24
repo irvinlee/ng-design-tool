@@ -1,4 +1,4 @@
 export interface Coordinates {
-  top: number;
-  left: number;
+  top?: number;
+  left?: number;
 }
