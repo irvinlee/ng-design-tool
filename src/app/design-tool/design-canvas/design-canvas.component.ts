@@ -28,7 +28,6 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     });
 
     this.localDesignState.subscribe((newDesignState) => {
-      console.log(newDesignState);
       this.renderDesign(newDesignState);
     });
   }
