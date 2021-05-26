@@ -34,4 +34,24 @@ export class TextElement extends DesignElement{
 
     canvasContext.fillText(this.value, this.left as number, (this.top  as number) + this.height);
   }
+
+  onClick(): void {
+    console.log('clicked');
+  }
+
+  onMouseMove(): void {
+    console.log('hovered');
+  }
+
+  onMouseOut(): void {
+    console.log('mouse out');
+  }
+
+  onMouseUp(): void {
+    console.log('mouse up');
+  }
+
+  onMouseDown(): void {
+   console.log('mouse down');
+  }
 }

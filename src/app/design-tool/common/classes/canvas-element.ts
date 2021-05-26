@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 
@@ -73,4 +74,36 @@ export abstract class CanvasElement {
           mouseY >= (this.top as number) - 5 &&
           mouseY <= (this.top as number) + (this.height as number) + 10;
   }
+
+  subscribeToMouseEvents(obs: Observable<{event: MouseEvent, type: string}>): void {
+    obs.subscribe(({event, type}) => {
+      const {x, y} = this.getRelativeCursorCoordinates(event);
+
+      if (this.checkIsHovered(x, y)) {
+        switch (type) {
+          case 'mousemove': this.onMouseMove(); break;
+          case 'mouseup': this.onMouseUp(); break;
+          case 'mousedown': this.onMouseDown(); break;
+          case 'click': this.onClick(); break;
+        }
+
+      } else {
+        this.onMouseOut();
+      }
+    });
+  }
+
+  private getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {
+    const target = event.target as HTMLCanvasElement;
+    return {
+      x: event.clientX - target.offsetLeft,
+      y: event.clientY - target.offsetTop,
+    };
+  }
+
+  abstract onClick(): void;
+  abstract onMouseMove(): void;
+  abstract onMouseOut(): void;
+  abstract onMouseUp(): void;
+  abstract onMouseDown(): void;
 }

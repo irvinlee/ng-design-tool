@@ -58,4 +58,24 @@ export class ImageElement extends DesignElement{
       this.height as number
     );
   }
+
+  onClick(): void {
+    console.log('clicked');
+  }
+
+  onMouseMove(): void {
+    console.log('hovered');
+  }
+
+  onMouseOut(): void {
+    console.log('mouse out');
+  }
+
+  onMouseUp(): void {
+    console.log('mouse up');
+  }
+
+  onMouseDown(): void {
+   console.log('mouse down');
+  }
 }
