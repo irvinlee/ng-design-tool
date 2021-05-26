@@ -17,6 +17,8 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   private localDesignStateSubject: BehaviorSubject<DesignState> = new BehaviorSubject(new DesignState());
 
   localDesignState = this.localDesignStateSubject.asObservable();
+
+  canvasRef?: HTMLCanvasElement;
   canvasContext?: CanvasRenderingContext2D;
 
   constructor(private designToolService: DesignToolService) {
@@ -26,18 +28,22 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     });
 
     this.localDesignState.subscribe((newDesignState) => {
+      console.log(newDesignState);
       this.renderDesign(newDesignState);
     });
   }
 
   renderDesign(designState: DesignState): void {
+    this.canvasContext?.clearRect(0, 0, this.width, this.height);
+
     designState.elements.forEach((designEl) => {
       designEl?.render(this.canvasContext as CanvasRenderingContext2D);
     });
   }
 
   ngAfterViewInit(): void {
-    this.canvasContext = (document.getElementById(this.id) as HTMLCanvasElement).getContext('2d') as CanvasRenderingContext2D;
+    this.canvasRef = document.getElementById(this.id) as HTMLCanvasElement;
+    this.canvasContext = this.canvasRef.getContext('2d') as CanvasRenderingContext2D;
   }
 
   ngOnDestroy(): void {

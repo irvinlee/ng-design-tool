@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ɵɵsetComponentScope } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { DesignState } from './common/classes/design-state';
 
@@ -23,11 +23,13 @@ export class DesignToolService {
   }
 
   insertImage(): void {
-    this.updateDesignState(this.designStateBehavior.getValue().insertImage());
+    const newDesignState = new DesignState(this.designStateBehavior.getValue());
+    this.updateDesignState(newDesignState.insertImage());
   }
 
   insertText(): void {
-    this.updateDesignState(this.designStateBehavior.getValue().insertText());
+    const newDesignState = new DesignState(this.designStateBehavior.getValue());
+    this.updateDesignState(newDesignState.insertText());
   }
 
   undo(): void {
@@ -53,7 +55,9 @@ export class DesignToolService {
       this.undoBuffer.shift();
     }
     this.undoBuffer.push(this.designStateBehavior.getValue().clone());
-    this.designStateBehavior.next(newDesignState.clone());
+    this.designStateBehavior.next(newDesignState);
     this.undoBufferLengthBehavior.next(this.undoBuffer.length);
+    this.redoBuffer = [];
+    this.redoBufferLengthBehavior.next(0);
   }
 }
