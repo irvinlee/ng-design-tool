@@ -21,7 +21,7 @@ export class TextElement extends DesignElement{
     return new TextElement(this);
   }
 
-  render(canvasRef: HTMLCanvasElement): void {
+  render(canvasRef: CanvasRenderingContext2D): void {
 
   }
 }

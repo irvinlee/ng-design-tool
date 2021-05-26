@@ -1,6 +1,9 @@
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 
+const DEFAULT_TOP = 100;
+const DEFAULT_LEFT = 100;
+
 export abstract class CanvasElement {
   // tslint:disable-next-line:variable-name
   private _coordinates = {} as Coordinates;
@@ -8,7 +11,7 @@ export abstract class CanvasElement {
   private _dimensions = {} as Dimensions;
 
   constructor(coordinates?: Coordinates, dimensions?: Dimensions ) {
-    this._coordinates = {top: coordinates?.top, left: coordinates?.left};
+    this._coordinates = {top: coordinates?.top || DEFAULT_TOP, left: coordinates?.left || DEFAULT_LEFT};
     this._dimensions = {width: dimensions?.width, height: dimensions?.height};
   }
 
