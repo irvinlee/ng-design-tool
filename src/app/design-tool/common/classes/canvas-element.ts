@@ -57,7 +57,7 @@ export abstract class CanvasElement {
   }
 
   get coordinates(): Coordinates {
-    return {...this.coordinates};
+    return {...this._coordinates};
   }
 
   checkIsHovered(mouseX: number, mouseY: number): boolean {

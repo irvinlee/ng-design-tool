@@ -1,19 +1,19 @@
-import { DesignCanvasModule } from './modules/design-canvas/design-canvas.module';
 import { DesignToolService } from './design-tool.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DesignToolComponent } from './design-tool.component';
+import { DesignToolComponent } from './design-tool/design-tool.component';
 import { ToolbarModule } from './modules/toolbar/toolbar.module';
+import { DesignCanvasComponent } from './design-canvas/design-canvas.component';
 
 
 @NgModule({
   declarations: [
     DesignToolComponent,
+    DesignCanvasComponent,
   ],
   imports: [
     CommonModule,
     ToolbarModule,
-    DesignCanvasModule
   ],
   exports: [
     DesignToolComponent

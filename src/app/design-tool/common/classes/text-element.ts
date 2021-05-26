@@ -20,4 +20,8 @@ export class TextElement extends DesignElement{
   clone(): TextElement {
     return new TextElement(this);
   }
+
+  render(canvasRef: HTMLCanvasElement): void {
+
+  }
 }

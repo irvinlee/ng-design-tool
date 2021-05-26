@@ -1,4 +1,4 @@
-import { DesignToolService } from './design-tool.service';
+import { DesignToolService } from '../design-tool.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
