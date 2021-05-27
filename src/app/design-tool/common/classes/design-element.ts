@@ -40,7 +40,11 @@ export abstract class DesignElement extends CanvasElement{
   }
 
   onClick(): void {
-    console.log('clicked');
+    if (this.eventListeners.has('click')) {
+      // tslint:disable-next-line:ban-types
+      const clickCB = this.eventListeners.get('click') as Function;
+      clickCB(this);
+    }
   }
 
   onMouseMove(): void {

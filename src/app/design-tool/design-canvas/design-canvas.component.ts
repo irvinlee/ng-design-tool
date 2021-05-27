@@ -18,6 +18,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   private localDesignStateSubject = new BehaviorSubject(new DesignState());
   private mouseEventSubject: BehaviorSubject<{event: MouseEvent, type: string}|undefined> =
     new BehaviorSubject<{event: MouseEvent, type: string}|undefined>(undefined);
+  private selectedElement: DesignElement | undefined;
 
   localDesignState = this.localDesignStateSubject.asObservable();
   mouseEventObservable = this.mouseEventSubject.asObservable();
@@ -42,6 +43,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       designEl?.subscribeToMouseEvents(this.mouseEventObservable as Observable<{event: MouseEvent, type: string}>);
       designEl?.addEventListener('mousemove', this.onHoverElement.bind(this));
       designEl?.addEventListener('mouseout', this.onElementMouseOut.bind(this));
+      designEl?.addEventListener('click', this.onElementClick.bind(this));
     });
   }
 
@@ -74,6 +76,10 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   private onElementMouseOut(): void {
     (this.canvasRef as HTMLCanvasElement).style.cursor = 'default';
     this.renderDesign(this.getLocalDesignState());
+  }
+
+  private onElementClick(element: DesignElement): void {
+    console.log(element);
   }
 
   private onCanvasMouseMove(event: MouseEvent): void {
