@@ -44,6 +44,8 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       designEl?.addEventListener('mousemove', this.onHoverElement.bind(this));
       designEl?.addEventListener('mouseout', this.onElementMouseOut.bind(this));
       designEl?.addEventListener('click', this.onElementClick.bind(this));
+      designEl?.addEventListener('drag', this.onElementDrag.bind(this));
+      designEl?.addEventListener('drop', this.onElementDrop.bind(this));
     });
   }
 
@@ -87,6 +89,16 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       }
     });
     this.renderDesign(this.getLocalDesignState());
+  }
+
+  private onElementDrag(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
+    element.top = cursorY - ((element.height as number) / 2);
+    element.left = cursorX - ((element.width as number) / 2);
+    this.renderDesign(this.getLocalDesignState());
+  }
+
+  private onElementDrop(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
+
   }
 
   private onCanvasMouseMove(event: MouseEvent): void {

@@ -71,12 +71,20 @@ export abstract class DesignElement extends CanvasElement{
    console.log('mouse down');
   }
 
-  onDrag(): void {
-    console.log('drag start');
+  onDrag(cursorX: number, cursorY: number): void {
+    if (this.eventListeners.has('drag')) {
+      // tslint:disable-next-line:ban-types
+      const dragCB = this.eventListeners.get('drag') as Function;
+      dragCB(this, {cursorX, cursorY});
+    }
   }
 
-  onDrop(): void {
-    console.log('drop...');
+  onDrop(cursorX: number, cursorY: number): void {
+    if (this.eventListeners.has('drop')) {
+      // tslint:disable-next-line:ban-types
+      const dropCB = this.eventListeners.get('drop') as Function;
+      dropCB(this, {cursorX, cursorY});
+    }
   }
 
   // tslint:disable-next-line:ban-types

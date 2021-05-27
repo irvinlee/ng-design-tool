@@ -94,7 +94,7 @@ export abstract class CanvasElement {
               this.isHovered = true;
               if (this.hasTriggeredMouseDownEvent) {
                 this.hasTriggeredDragEvent = true;
-                this.onDrag();
+                this.onDrag(x, y);
               } else {
                 this.onMouseMove();
               }
@@ -108,7 +108,10 @@ export abstract class CanvasElement {
               }
 
               if (this.hasTriggeredDragEvent) {
-                this.onDrop();
+                this.onDrop(x, y);
+                // end drag...
+                this.hasTriggeredDragEvent = false;
+                console.log('end drag..');
               } else {
                 this.onMouseUp();
               }
@@ -147,6 +150,6 @@ export abstract class CanvasElement {
   abstract onMouseOut(): void;
   abstract onMouseUp(): void;
   abstract onMouseDown(): void;
-  abstract onDrag(): void;
-  abstract onDrop(): void;
+  abstract onDrag(cursorX: number, cursorY: number): void;
+  abstract onDrop(cursorX: number, cursorY: number): void;
 }
