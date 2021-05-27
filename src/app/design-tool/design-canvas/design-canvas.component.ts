@@ -98,7 +98,8 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onElementDrop(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
-
+    // commit element update to the master copy of the Design State
+    this.designToolService.updateDesignState(this.getLocalDesignState().clone());
   }
 
   private onCanvasMouseMove(event: MouseEvent): void {
