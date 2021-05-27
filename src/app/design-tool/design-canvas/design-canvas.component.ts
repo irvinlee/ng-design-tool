@@ -107,7 +107,8 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       (designEl as DesignElement).unsubscribeMouseEvents();
     });
     // commit element update to the master copy of the Design State
-    this.designToolService.updateDesignState(this.getLocalDesignState().clone());
+    // instantiate a brand new object to clear all previous references..
+    this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));
   }
 
   private onCanvasMouseMove(event: MouseEvent): void {

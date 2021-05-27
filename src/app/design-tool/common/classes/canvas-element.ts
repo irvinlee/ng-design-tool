@@ -95,11 +95,7 @@ export abstract class CanvasElement {
             case 'mousemove':
               this.isHovered = true;
 
-              if (
-                this.lastMouseDownTimestamp !== undefined &&
-                this.hasTriggeredMouseDownEvent &&
-                Date.now() - (this.lastMouseDownTimestamp as number) > 150
-              ) {
+              if (this.hasTriggeredMouseDownEvent) {
                 this.hasTriggeredDragEvent = true;
                 this.onDrag(x, y);
               } else {
@@ -110,6 +106,7 @@ export abstract class CanvasElement {
               // if the user held the mouse for less than 150ms, we'll consider it a click..
               if (Date.now() - (this.lastMouseDownTimestamp as number) < 150) {
                 this.onClick();
+                this.hasTriggeredMouseDownEvent = false;
               } else {
                 this.hasTriggeredMouseDownEvent = false;
                 if (this.hasTriggeredDragEvent) {
