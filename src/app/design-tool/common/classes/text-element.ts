@@ -45,7 +45,7 @@ export class TextElement extends DesignElement{
 
     canvasContext.fillText(this.value, this.left as number, (this.top  as number) + this.height);
 
-    if (this.isHovered) {
+    if (this.isHovered || this.isSelected) {
       this.displayOutline(canvasContext);
     }
 

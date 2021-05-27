@@ -59,7 +59,7 @@ export class ImageElement extends DesignElement{
       this.height as number
     );
 
-    if (this.isHovered) {
+    if (this.isHovered || this.isSelected) {
       this.displayOutline(canvasContext);
     }
 

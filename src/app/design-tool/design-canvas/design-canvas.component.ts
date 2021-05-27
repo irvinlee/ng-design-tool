@@ -79,7 +79,14 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onElementClick(element: DesignElement): void {
-    console.log(element);
+    this.getLocalDesignState().elements.forEach((designEl: DesignElement | undefined) => {
+      if (designEl === element) {
+        designEl.isSelected = true;
+      } else {
+        (designEl as DesignElement).isSelected = false;
+      }
+    });
+    this.renderDesign(this.getLocalDesignState());
   }
 
   private onCanvasMouseMove(event: MouseEvent): void {
