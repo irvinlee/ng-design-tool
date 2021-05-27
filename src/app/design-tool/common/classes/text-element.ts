@@ -34,7 +34,7 @@ export class TextElement extends DesignElement{
     return new TextElement(this);
   }
 
-  render(canvasContext: CanvasRenderingContext2D): void {
+  render(canvasContext: CanvasRenderingContext2D): TextElement {
     canvasContext.textBaseline = 'bottom';
     canvasContext.fillStyle = this.format.color;
     canvasContext.font = `${this.format.size}px ${this.format.font}`;
@@ -44,6 +44,7 @@ export class TextElement extends DesignElement{
     this.height = metrics.actualBoundingBoxAscent;
 
     canvasContext.fillText(this.value, this.left as number, (this.top  as number) + this.height);
+    return this;
   }
 
   onClick(): void {
@@ -64,5 +65,13 @@ export class TextElement extends DesignElement{
 
   onMouseDown(): void {
    console.log('mouse down');
+  }
+
+  onDrag(): void {
+    console.log('drag start');
+  }
+
+  onDrop(): void {
+    console.log('drop...');
   }
 }

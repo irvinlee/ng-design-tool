@@ -24,5 +24,5 @@ export abstract class DesignElement extends CanvasElement{
   }
 
   abstract clone(): DesignElement;
-  abstract render(canvasRef: CanvasRenderingContext2D): void;
+  abstract render(canvasRef: CanvasRenderingContext2D): DesignElement;
 }

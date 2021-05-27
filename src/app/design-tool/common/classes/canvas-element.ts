@@ -11,6 +11,10 @@ export abstract class CanvasElement {
   // tslint:disable-next-line:variable-name
   private _dimensions = {} as Dimensions;
 
+  private hasTriggeredMouseDownEvent = false;
+  private hasTriggeredDragEvent = false;
+  private hasTriggeredClickEvent = false;
+
   isHovered = false;
 
   constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false) {
@@ -79,23 +83,53 @@ export abstract class CanvasElement {
   }
 
   subscribeToMouseEvents(obs: Observable<{event: MouseEvent, type: string}>): void {
-    obs.subscribe(({event, type}) => {
-      const {x, y} = this.getRelativeCursorCoordinates(event);
+    obs.subscribe((data) => {
+      if (data) {
+        const {event, type} = data;
+        const {x, y} = this.getRelativeCursorCoordinates(event);
 
-      if (this.checkIsHovered(x, y)) {
-        switch (type) {
-          case 'mousemove':
-            this.isHovered = true;
-            this.onMouseMove();
-            break;
-          case 'mouseup': this.onMouseUp(); break;
-          case 'mousedown': this.onMouseDown(); break;
-          case 'click': this.onClick(); break;
+        if (this.checkIsHovered(x, y)) {
+          switch (type) {
+            case 'mousemove':
+              this.isHovered = true;
+              if (this.hasTriggeredMouseDownEvent) {
+                this.hasTriggeredDragEvent = true;
+                this.onDrag();
+              } else {
+                this.onMouseMove();
+              }
+              break;
+            case 'mouseup':
+              if (!this.hasTriggeredMouseDownEvent) {
+                this.hasTriggeredClickEvent = true;
+                this.onClick();
+              } else {
+                this.hasTriggeredMouseDownEvent = false;
+              }
+
+              if (this.hasTriggeredDragEvent) {
+                this.onDrop();
+              } else {
+                this.onMouseUp();
+              }
+              break;
+            case 'mousedown':
+              setTimeout(() => {
+                if (!this.hasTriggeredClickEvent) {
+                  this.hasTriggeredMouseDownEvent = true;
+                  this.onMouseDown();
+                } else {
+                  // acknowledge the click event and reset the flag..
+                  this.hasTriggeredClickEvent = false;
+                }
+              }, 300);
+              break;
+          }
+
+        } else if (this.isHovered){
+          this.isHovered = false;
+          this.onMouseOut();
         }
-
-      } else if (this.isHovered){
-        this.isHovered = false;
-        this.onMouseOut();
       }
     });
   }
@@ -113,4 +147,6 @@ export abstract class CanvasElement {
   abstract onMouseOut(): void;
   abstract onMouseUp(): void;
   abstract onMouseDown(): void;
+  abstract onDrag(): void;
+  abstract onDrop(): void;
 }

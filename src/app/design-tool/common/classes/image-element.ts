@@ -36,7 +36,7 @@ export class ImageElement extends DesignElement{
     this.imageObj.src = this.src;
   }
 
-  render(canvasContext: CanvasRenderingContext2D): void {
+  render(canvasContext: CanvasRenderingContext2D): ImageElement {
     if (!this.src) {
       throw new Error('Invalid Image SRC');
     }
@@ -47,7 +47,7 @@ export class ImageElement extends DesignElement{
       }
       // image not yet ready.. try again a bit later.
       setTimeout(() => this.render(canvasContext), 200);
-      return;
+      return this;
     }
 
     canvasContext.drawImage(
@@ -57,6 +57,8 @@ export class ImageElement extends DesignElement{
       this.width as number,
       this.height as number
     );
+
+    return this;
   }
 
   onClick(): void {
@@ -77,5 +79,13 @@ export class ImageElement extends DesignElement{
 
   onMouseDown(): void {
    console.log('mouse down');
+  }
+
+  onDrag(): void {
+    console.log('drag start');
+  }
+
+  onDrop(): void {
+    console.log('drop...');
   }
 }
