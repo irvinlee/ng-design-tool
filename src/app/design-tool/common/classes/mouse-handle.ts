@@ -1,13 +1,16 @@
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
+import { ɵCompiler_compileModuleSync__POST_R3__, ɵɵsetComponentScope } from '@angular/core';
 
 export class MouseHandle extends CanvasElement{
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
+  cursor = 'default';
 
-  constructor(coordinates?: Coordinates) {
+  constructor(coordinates?: Coordinates, cursor?: string) {
     super(coordinates, {width: 8, height: 8} as Dimensions);
+    this.cursor = cursor || 'default';
   }
 
   render(canvasContext: CanvasRenderingContext2D): void {
@@ -32,10 +35,8 @@ export class MouseHandle extends CanvasElement{
   }
 
   onMouseMove(): void {
-    if (this.eventListeners.has('mousemove')) {
-      // tslint:disable-next-line:ban-types
-      const mousemoveCB = this.eventListeners.get('mousemove') as Function;
-      mousemoveCB(this);
+    if (this.parentCanvasElement) {
+      (this.parentCanvasElement as HTMLCanvasElement).style.cursor = this.cursor;
     }
   }
 
@@ -43,6 +44,10 @@ export class MouseHandle extends CanvasElement{
     if (this.eventListeners.has('mouseout')) {
       // tslint:disable-next-line:ban-types
       const mouseOutCB = this.eventListeners.get('mouseout') as Function;
+
+      if (this.parentCanvasElement) {
+        (this.parentCanvasElement as HTMLCanvasElement).style.cursor = 'default';
+      }
       mouseOutCB(this);
     }
   }

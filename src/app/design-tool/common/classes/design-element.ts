@@ -1,10 +1,12 @@
+import { Observable } from 'rxjs';
 import { ResizeHandles } from './resize-handles';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
 
 export abstract class DesignElement extends CanvasElement{
-  isSelected = false;
+  // tslint:disable-next-line:variable-name
+  private _isSelected = false;
   zIndex = 0;
   resizeHandles = new ResizeHandles();
   // tslint:disable-next-line:ban-types
@@ -20,12 +22,41 @@ export abstract class DesignElement extends CanvasElement{
     eventListeners?: Map<string, Function>
   ) {
     super(coordinates, dimensions, isHovered);
-    this.isSelected = !!isSelected;
+    this._isSelected = !!isSelected;
     this.zIndex = zIndex || 0;
 
     if (eventListeners) {
       this.eventListeners = new Map(eventListeners);
     }
+  }
+
+  get isSelected(): boolean {
+    return this._isSelected;
+  }
+
+  set isSelected(newVal: boolean) {
+    this._isSelected = newVal;
+  }
+
+  setParentCanvas(canvas: HTMLCanvasElement | undefined): void {
+    this.bindToCanvasElement(canvas);
+    this.resizeHandles.setParentCanvas(canvas);
+  }
+
+  bindMouseEventObservable(obs: Observable<{event: MouseEvent, type: string}>): void {
+    this.subscribeToMouseEvents(obs);
+    this.resizeHandles.topLeftHandle.subscribeToMouseEvents(obs);
+    this.resizeHandles.topRightHandle.subscribeToMouseEvents(obs);
+    this.resizeHandles.bottomLeftHandle.subscribeToMouseEvents(obs);
+    this.resizeHandles.bottomRightHandle.subscribeToMouseEvents(obs);
+  }
+
+  unbindMouseEventObservable(): void {
+    this.unsubscribeMouseEvents();
+    this.resizeHandles.topLeftHandle.unsubscribeMouseEvents();
+    this.resizeHandles.topLeftHandle.unsubscribeMouseEvents();
+    this.resizeHandles.topLeftHandle.unsubscribeMouseEvents();
+    this.resizeHandles.topLeftHandle.unsubscribeMouseEvents();
   }
 
   displayOutline(canvasContext: CanvasRenderingContext2D): void {
@@ -37,8 +68,6 @@ export abstract class DesignElement extends CanvasElement{
       (this.width  as number) + 10,
       (this.height  as number) + 5
     );
-    // console.log(canvasContext);
-    // console.log(`${this.left} - ${this.top} - ${this.width} - ${this.height}`);
   }
 
   renderResizeHandles(canvasContext: CanvasRenderingContext2D): void {

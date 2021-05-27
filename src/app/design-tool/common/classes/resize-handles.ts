@@ -1,10 +1,10 @@
 import { MouseHandle } from './mouse-handle';
 
 export class ResizeHandles {
-  private topLeftHandle = new MouseHandle();
-  private topRightHandle = new MouseHandle();
-  private bottomLeftHandle = new MouseHandle();
-  private bottomRightHandle = new MouseHandle();
+  topLeftHandle = new MouseHandle(undefined, 'nwse-resize');
+  topRightHandle = new MouseHandle(undefined, 'nesw-resize');
+  bottomLeftHandle = new MouseHandle(undefined, 'nesw-resize');
+  bottomRightHandle = new MouseHandle(undefined, 'nwse-resize');
 
   setPosition(x: number, y: number, width: number, height: number): void{
     this.topLeftHandle.left = x;
@@ -25,5 +25,12 @@ export class ResizeHandles {
     this.topRightHandle.render(canvasContext);
     this.bottomLeftHandle.render(canvasContext);
     this.bottomRightHandle.render(canvasContext);
+  }
+
+  setParentCanvas(canvas: HTMLCanvasElement | undefined): void {
+    this.topLeftHandle.bindToCanvasElement(canvas);
+    this.topRightHandle.bindToCanvasElement(canvas);
+    this.bottomLeftHandle.bindToCanvasElement(canvas);
+    this.bottomRightHandle.bindToCanvasElement(canvas);
   }
 }

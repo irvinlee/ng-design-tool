@@ -16,6 +16,9 @@ export abstract class CanvasElement {
   private hasTriggeredClickEvent = false;
   private mouseSubscription?: Subscription;
   private lastMouseDownTimestamp: number | undefined;
+
+  protected parentCanvasElement: HTMLCanvasElement | undefined;
+
   isHovered = false;
 
   constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false) {
@@ -70,6 +73,10 @@ export abstract class CanvasElement {
 
   get coordinates(): Coordinates {
     return {...this._coordinates};
+  }
+
+  bindToCanvasElement(canvas: HTMLCanvasElement | undefined): void {
+    this.parentCanvasElement = canvas;
   }
 
   checkIsHovered(mouseX: number, mouseY: number): boolean {
@@ -136,13 +143,10 @@ export abstract class CanvasElement {
 
   unsubscribeMouseEvents(): void {
     this.mouseSubscription?.unsubscribe();
-  }
-
-  resetAllEventFlags(): void {
     this.isHovered = false;
     this.hasTriggeredMouseDownEvent = false;
     this.hasTriggeredDragEvent = false;
-    this.hasTriggeredClickEvent = false;
+    this.hasTriggeredClickEvent = false; 
   }
 
   private getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {

@@ -40,7 +40,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
   bindDesignElementMouseEvents(designState: DesignState): void {
     designState.elements.forEach((designEl) => {
-      designEl?.subscribeToMouseEvents(this.mouseEventObservable as Observable<{event: MouseEvent, type: string}>);
+      designEl?.bindMouseEventObservable(this.mouseEventObservable as Observable<{event: MouseEvent, type: string}>);
       designEl?.addEventListener('mousemove', this.onHoverElement.bind(this));
       designEl?.addEventListener('mouseout', this.onElementMouseOut.bind(this));
       designEl?.addEventListener('click', this.onElementClick.bind(this));
@@ -57,6 +57,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     this.clearCanvas();
     designState.elements.forEach((designEl) => {
       designEl?.render(this.canvasContext as CanvasRenderingContext2D);
+      designEl?.setParentCanvas(this.canvasRef);
     });
   }
 
@@ -103,8 +104,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   private onElementDrop(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
     // unsubscribe all mouse event subscriptions in the elements
     this.getLocalDesignState().elements.forEach(designEl => {
-      (designEl as DesignElement).resetAllEventFlags();
-      (designEl as DesignElement).unsubscribeMouseEvents();
+      (designEl as DesignElement).unbindMouseEventObservable();
     });
     // commit element update to the master copy of the Design State
     // instantiate a brand new object to clear all previous references..
