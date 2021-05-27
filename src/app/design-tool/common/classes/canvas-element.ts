@@ -94,7 +94,12 @@ export abstract class CanvasElement {
           switch (type) {
             case 'mousemove':
               this.isHovered = true;
-              if (this.hasTriggeredMouseDownEvent) {
+
+              if (
+                this.lastMouseDownTimestamp !== undefined &&
+                this.hasTriggeredMouseDownEvent &&
+                Date.now() - (this.lastMouseDownTimestamp as number) > 150
+              ) {
                 this.hasTriggeredDragEvent = true;
                 this.onDrag(x, y);
               } else {
@@ -116,6 +121,7 @@ export abstract class CanvasElement {
                   this.onMouseUp();
                 }
               }
+              this.lastMouseDownTimestamp = undefined;
               break;
             case 'mousedown':
               this.hasTriggeredMouseDownEvent = true;

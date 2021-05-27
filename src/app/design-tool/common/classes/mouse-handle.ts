@@ -1,54 +1,26 @@
-import { ResizeHandles } from './resize-handles';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
 
-export abstract class DesignElement extends CanvasElement{
-  isSelected = false;
-  zIndex = 0;
-  resizeHandles = new ResizeHandles();
+export class MouseHandle extends CanvasElement{
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
 
-  constructor(
-    coordinates?: Coordinates,
-    dimensions?: Dimensions,
-    isHovered?: boolean,
-    isSelected?: boolean,
-    zIndex?: number,
-    // tslint:disable-next-line:ban-types
-    eventListeners?: Map<string, Function>
-  ) {
-    super(coordinates, dimensions, isHovered);
-    this.isSelected = !!isSelected;
-    this.zIndex = zIndex || 0;
-
-    if (eventListeners) {
-      this.eventListeners = new Map(eventListeners);
-    }
+  constructor(coordinates?: Coordinates) {
+    super(coordinates, {width: 8, height: 8} as Dimensions);
   }
 
-  displayOutline(canvasContext: CanvasRenderingContext2D): void {
+  render(canvasContext: CanvasRenderingContext2D): void {
     canvasContext.beginPath();
-    canvasContext.strokeStyle = '#000';
-    canvasContext.strokeRect(
-      (this.left as number) - 5,
-      (this.top  as number) - 5,
-      (this.width  as number) + 10,
-      (this.height  as number) + 5
+    canvasContext.rect(
+      (this.left as number) - (this.width  as number) / 2,
+      (this.top  as number) - (this.height  as number) / 2,
+      (this.width  as number),
+      (this.height  as number)
     );
-    // console.log(canvasContext);
-    // console.log(`${this.left} - ${this.top} - ${this.width} - ${this.height}`);
-  }
-
-  renderResizeHandles(canvasContext: CanvasRenderingContext2D): void {
-    this.resizeHandles.setPosition(
-      (this.left as number) - 5,
-      (this.top as number) - 5,
-      (this.width  as number) + 10,
-      (this.height  as number) + 5
-    );
-    this.resizeHandles.render(canvasContext);
+    canvasContext.fillStyle = 'white';
+    canvasContext.fill();
+    canvasContext.stroke();
   }
 
   onClick(): void {
@@ -103,7 +75,4 @@ export abstract class DesignElement extends CanvasElement{
   addEventListener(key: string, callback: Function): void {
     this.eventListeners.set(key, callback);
   }
-
-  abstract clone(): DesignElement;
-  abstract render(canvasRef: CanvasRenderingContext2D): DesignElement;
 }

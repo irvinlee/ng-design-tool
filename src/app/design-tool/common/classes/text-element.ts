@@ -49,6 +49,10 @@ export class TextElement extends DesignElement{
       this.displayOutline(canvasContext);
     }
 
+    if (this.isSelected) {
+      this.renderResizeHandles(canvasContext);
+    }
+
     return this;
   }
 }

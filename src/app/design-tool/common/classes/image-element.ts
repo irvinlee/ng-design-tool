@@ -63,6 +63,9 @@ export class ImageElement extends DesignElement{
       this.displayOutline(canvasContext);
     }
 
+    if (this.isSelected) {
+      this.renderResizeHandles(canvasContext);
+    }
     return this;
   }
 }
