@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 
@@ -14,7 +14,8 @@ export abstract class CanvasElement {
   private hasTriggeredMouseDownEvent = false;
   private hasTriggeredDragEvent = false;
   private hasTriggeredClickEvent = false;
-
+  private mouseSubscription?: Subscription;
+  private lastMouseDownTimestamp: number | undefined;
   isHovered = false;
 
   constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false) {
@@ -83,7 +84,8 @@ export abstract class CanvasElement {
   }
 
   subscribeToMouseEvents(obs: Observable<{event: MouseEvent, type: string}>): void {
-    obs.subscribe((data) => {
+    // clear previous subscriptions if any...
+    this.mouseSubscription = obs.subscribe((data) => {
       if (data) {
         const {event, type} = data;
         const {x, y} = this.getRelativeCursorCoordinates(event);
@@ -100,32 +102,24 @@ export abstract class CanvasElement {
               }
               break;
             case 'mouseup':
-              if (!this.hasTriggeredMouseDownEvent) {
-                this.hasTriggeredClickEvent = true;
+              // if the user held the mouse for less than 150ms, we'll consider it a click..
+              if (Date.now() - (this.lastMouseDownTimestamp as number) < 150) {
                 this.onClick();
               } else {
                 this.hasTriggeredMouseDownEvent = false;
-              }
-
-              if (this.hasTriggeredDragEvent) {
-                this.onDrop(x, y);
-                // end drag...
-                this.hasTriggeredDragEvent = false;
-                console.log('end drag..');
-              } else {
-                this.onMouseUp();
+                if (this.hasTriggeredDragEvent) {
+                  this.onDrop(x, y);
+                  // end drag...
+                  this.hasTriggeredDragEvent = false;
+                  this.hasTriggeredClickEvent = false;
+                } else {
+                  this.onMouseUp();
+                }
               }
               break;
             case 'mousedown':
-              setTimeout(() => {
-                if (!this.hasTriggeredClickEvent) {
-                  this.hasTriggeredMouseDownEvent = true;
-                  this.onMouseDown();
-                } else {
-                  // acknowledge the click event and reset the flag..
-                  this.hasTriggeredClickEvent = false;
-                }
-              }, 300);
+              this.hasTriggeredMouseDownEvent = true;
+              this.lastMouseDownTimestamp = Date.now();
               break;
           }
 
@@ -135,6 +129,17 @@ export abstract class CanvasElement {
         }
       }
     });
+  }
+
+  unsubscribeMouseEvents(): void {
+    this.mouseSubscription?.unsubscribe();
+  }
+
+  resetAllEventFlags(): void {
+    this.isHovered = false;
+    this.hasTriggeredMouseDownEvent = false;
+    this.hasTriggeredDragEvent = false;
+    this.hasTriggeredClickEvent = false;
   }
 
   private getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {

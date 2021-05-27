@@ -6,37 +6,37 @@ import { DesignState } from './common/classes/design-state';
   providedIn: 'root'
 })
 export class DesignToolService {
-  private undoBufferLengthBehavior = new BehaviorSubject<number>(0);
-  private redoBufferLengthBehavior = new BehaviorSubject<number>(0);
-  private designStateBehavior = new BehaviorSubject(new DesignState());
+  private undoBufferLengthSubject = new BehaviorSubject<number>(0);
+  private redoBufferLengthSubject = new BehaviorSubject<number>(0);
+  private designStateSubject = new BehaviorSubject(new DesignState());
   private undoBuffer: Array<DesignState> = [];
   private redoBuffer: Array<DesignState> = [];
 
   readonly MAX_BUFFER_LENGTH = 10;
-  undoBufferLength = this.undoBufferLengthBehavior.asObservable();
-  redoBufferLength = this.redoBufferLengthBehavior.asObservable();
-  designState = this.designStateBehavior.asObservable();
+  undoBufferLength = this.undoBufferLengthSubject.asObservable();
+  redoBufferLength = this.redoBufferLengthSubject.asObservable();
+  designState = this.designStateSubject.asObservable();
 
   private emitBufferLengthUpdates(): void {
-    this.undoBufferLengthBehavior.next(this.undoBuffer.length);
-    this.redoBufferLengthBehavior.next(this.redoBuffer.length);
+    this.undoBufferLengthSubject.next(this.undoBuffer.length);
+    this.redoBufferLengthSubject.next(this.redoBuffer.length);
   }
 
   insertImage(): void {
-    const newDesignState = new DesignState(this.designStateBehavior.getValue());
+    const newDesignState = new DesignState(this.designStateSubject.getValue());
     this.updateDesignState(newDesignState.insertImage());
   }
 
   insertText(): void {
-    const newDesignState = new DesignState(this.designStateBehavior.getValue());
+    const newDesignState = new DesignState(this.designStateSubject.getValue());
     this.updateDesignState(newDesignState.insertText());
   }
 
   undo(): void {
     if (this.undoBuffer.length) {
       const stateFromUndoBuffer = this.undoBuffer.pop() as DesignState;
-      this.redoBuffer.push(this.designStateBehavior.getValue().clone());
-      this.designStateBehavior.next(stateFromUndoBuffer);
+      this.redoBuffer.push(this.designStateSubject.getValue().clone());
+      this.designStateSubject.next(stateFromUndoBuffer);
       this.emitBufferLengthUpdates();
     }
   }
@@ -44,8 +44,8 @@ export class DesignToolService {
   redo(): void {
     if (this.redoBuffer.length) {
       const stateFromRedoBuffer = this.redoBuffer.pop() as DesignState;
-      this.undoBuffer.push(this.designStateBehavior.getValue().clone());
-      this.designStateBehavior.next(stateFromRedoBuffer);
+      this.undoBuffer.push(this.designStateSubject.getValue().clone());
+      this.designStateSubject.next(stateFromRedoBuffer);
       this.emitBufferLengthUpdates();
     }
   }
@@ -54,10 +54,10 @@ export class DesignToolService {
     if (this.undoBuffer.length + 1 > this.MAX_BUFFER_LENGTH) {
       this.undoBuffer.shift();
     }
-    this.undoBuffer.push(this.designStateBehavior.getValue().clone());
-    this.designStateBehavior.next(newDesignState);
-    this.undoBufferLengthBehavior.next(this.undoBuffer.length);
+    this.undoBuffer.push(this.designStateSubject.getValue().clone());
+    this.designStateSubject.next(newDesignState);
+    this.undoBufferLengthSubject.next(this.undoBuffer.length);
     this.redoBuffer = [];
-    this.redoBufferLengthBehavior.next(0);
+    this.redoBufferLengthSubject.next(0);
   }
 }

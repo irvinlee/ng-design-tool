@@ -49,9 +49,12 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     });
   }
 
-  renderDesign(designState: DesignState): void {
+  clearCanvas(): void {
     this.canvasContext?.clearRect(0, 0, this.width, this.height);
+  }
 
+  renderDesign(designState: DesignState): void {
+    this.clearCanvas();
     designState.elements.forEach((designEl) => {
       designEl?.render(this.canvasContext as CanvasRenderingContext2D);
     });
@@ -98,6 +101,11 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onElementDrop(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
+    // unsubscribe all mouse event subscriptions in the elements
+    this.getLocalDesignState().elements.forEach(designEl => {
+      (designEl as DesignElement).resetAllEventFlags();
+      (designEl as DesignElement).unsubscribeMouseEvents();
+    });
     // commit element update to the master copy of the Design State
     this.designToolService.updateDesignState(this.getLocalDesignState().clone());
   }
