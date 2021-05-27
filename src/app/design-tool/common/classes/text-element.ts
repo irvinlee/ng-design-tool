@@ -44,34 +44,11 @@ export class TextElement extends DesignElement{
     this.height = metrics.actualBoundingBoxAscent;
 
     canvasContext.fillText(this.value, this.left as number, (this.top  as number) + this.height);
+
+    if (this.isHovered) {
+      this.displayOutline(canvasContext);
+    }
+
     return this;
-  }
-
-  onClick(): void {
-    console.log('clicked');
-  }
-
-  onMouseMove(): void {
-    console.log('hovered');
-  }
-
-  onMouseOut(): void {
-    console.log('mouse out');
-  }
-
-  onMouseUp(): void {
-    console.log('mouse up');
-  }
-
-  onMouseDown(): void {
-   console.log('mouse down');
-  }
-
-  onDrag(): void {
-    console.log('drag start');
-  }
-
-  onDrop(): void {
-    console.log('drop...');
   }
 }

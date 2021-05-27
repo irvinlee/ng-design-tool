@@ -14,7 +14,8 @@ export class ImageElement extends DesignElement{
       elementToClone.dimensions,
       elementToClone.isHovered,
       elementToClone.isSelected,
-      elementToClone.zIndex
+      elementToClone.zIndex,
+      elementToClone.eventListeners
     );
 
     this.src = elementToClone.src || defaultImage;
@@ -58,34 +59,10 @@ export class ImageElement extends DesignElement{
       this.height as number
     );
 
+    if (this.isHovered) {
+      this.displayOutline(canvasContext);
+    }
+
     return this;
-  }
-
-  onClick(): void {
-    console.log('clicked');
-  }
-
-  onMouseMove(): void {
-    console.log('hovered');
-  }
-
-  onMouseOut(): void {
-    console.log('mouse out');
-  }
-
-  onMouseUp(): void {
-    console.log('mouse up');
-  }
-
-  onMouseDown(): void {
-   console.log('mouse down');
-  }
-
-  onDrag(): void {
-    console.log('drag start');
-  }
-
-  onDrop(): void {
-    console.log('drop...');
   }
 }

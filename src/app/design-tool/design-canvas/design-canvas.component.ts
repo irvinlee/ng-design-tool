@@ -3,6 +3,7 @@ import { DesignToolService } from './../design-tool.service';
 import { AfterViewInit, Component, Input, OnDestroy } from '@angular/core';
 import { generateRandomId } from '../common/utils';
 import { DesignState } from '../common/classes/design-state';
+import { DesignElement } from '../common/classes/design-element';
 
 @Component({
   selector: 'app-ypdt-design-canvas',
@@ -32,6 +33,15 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
     this.localDesignState.subscribe((newDesignState) => {
       this.renderDesign(newDesignState);
+      this.bindDesignElementMouseEvents(newDesignState);
+    });
+  }
+
+  bindDesignElementMouseEvents(designState: DesignState): void {
+    designState.elements.forEach((designEl) => {
+      designEl?.subscribeToMouseEvents(this.mouseEventObservable as Observable<{event: MouseEvent, type: string}>);
+      designEl?.addEventListener('mousemove', this.onHoverElement.bind(this));
+      designEl?.addEventListener('mouseout', this.onElementMouseOut.bind(this));
     });
   }
 
@@ -40,7 +50,6 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
     designState.elements.forEach((designEl) => {
       designEl?.render(this.canvasContext as CanvasRenderingContext2D);
-      designEl?.subscribeToMouseEvents(this.mouseEventObservable as Observable<{event: MouseEvent, type: string}>);
     });
   }
 
@@ -51,6 +60,20 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
+  }
+
+  private getLocalDesignState(): DesignState {
+    return this.localDesignStateSubject.getValue();
+  }
+
+  private onHoverElement(element: DesignElement): void {
+    (this.canvasRef as HTMLCanvasElement).style.cursor = 'pointer';
+    this.renderDesign(this.getLocalDesignState());
+  }
+
+  private onElementMouseOut(): void {
+    (this.canvasRef as HTMLCanvasElement).style.cursor = 'default';
+    this.renderDesign(this.getLocalDesignState());
   }
 
   private onCanvasMouseMove(event: MouseEvent): void {
