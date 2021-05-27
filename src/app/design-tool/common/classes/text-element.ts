@@ -1,13 +1,24 @@
+import { TextAlign } from './../../types/text-align.enum';
 import { TextFormat } from './../../types/text-format';
 import { DesignElement } from './design-element';
 
 const DEFAULT_TEXT = 'New Text Element';
+const DEFAULT_FORMAT = {
+  font: 'Arial',
+    size: 24,
+    color: '#000',
+    opacity: 100,
+    bgColor: '#FFF',
+    isBold: false,
+    isItalic: false,
+    alignment: TextAlign.LEFT
+} as TextFormat;
 
 export class TextElement extends DesignElement{
   value = '';
   format = {} as TextFormat;
 
-  constructor(elementToClone = {value: DEFAULT_TEXT} as TextElement) {
+  constructor(elementToClone = {value: DEFAULT_TEXT, format: DEFAULT_FORMAT} as TextElement) {
     super(
       elementToClone.coordinates,
       elementToClone.dimensions,

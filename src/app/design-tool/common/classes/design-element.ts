@@ -3,13 +3,11 @@ import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
 
 export abstract class DesignElement extends CanvasElement{
-  isHovered = false;
   isSelected = false;
   zIndex = 0;
 
   constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered?: boolean, isSelected?: boolean, zIndex?: number) {
-    super(coordinates, dimensions);
-    this.isHovered = !!isHovered;
+    super(coordinates, dimensions, isHovered);
     this.isSelected = !!isSelected;
     this.zIndex = zIndex || 0;
   }

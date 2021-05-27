@@ -11,9 +11,12 @@ export abstract class CanvasElement {
   // tslint:disable-next-line:variable-name
   private _dimensions = {} as Dimensions;
 
-  constructor(coordinates?: Coordinates, dimensions?: Dimensions ) {
+  isHovered = false;
+
+  constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false) {
     this._coordinates = {top: coordinates?.top || DEFAULT_TOP, left: coordinates?.left || DEFAULT_LEFT};
     this._dimensions = {width: dimensions?.width, height: dimensions?.height};
+    this.isHovered = isHovered;
   }
 
   get height(): number | undefined {
@@ -81,13 +84,17 @@ export abstract class CanvasElement {
 
       if (this.checkIsHovered(x, y)) {
         switch (type) {
-          case 'mousemove': this.onMouseMove(); break;
+          case 'mousemove':
+            this.isHovered = true;
+            this.onMouseMove();
+            break;
           case 'mouseup': this.onMouseUp(); break;
           case 'mousedown': this.onMouseDown(); break;
           case 'click': this.onClick(); break;
         }
 
-      } else {
+      } else if (this.isHovered){
+        this.isHovered = false;
         this.onMouseOut();
       }
     });
