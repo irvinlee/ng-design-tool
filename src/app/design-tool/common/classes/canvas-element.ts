@@ -146,7 +146,7 @@ export abstract class CanvasElement {
     this.isHovered = false;
     this.hasTriggeredMouseDownEvent = false;
     this.hasTriggeredDragEvent = false;
-    this.hasTriggeredClickEvent = false; 
+    this.hasTriggeredClickEvent = false;
   }
 
   private getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {

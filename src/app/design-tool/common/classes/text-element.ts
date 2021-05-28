@@ -55,4 +55,6 @@ export class TextElement extends DesignElement{
 
     return this;
   }
+
+  resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void {}
 }

@@ -1,7 +1,6 @@
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
-import { ɵCompiler_compileModuleSync__POST_R3__, ɵɵsetComponentScope } from '@angular/core';
 
 export class MouseHandle extends CanvasElement{
   // tslint:disable-next-line:ban-types
@@ -64,7 +63,7 @@ export class MouseHandle extends CanvasElement{
     if (this.eventListeners.has('drag')) {
       // tslint:disable-next-line:ban-types
       const dragCB = this.eventListeners.get('drag') as Function;
-      dragCB(this, {cursorX, cursorY});
+      dragCB(cursorX, cursorY);
     }
   }
 
@@ -72,7 +71,7 @@ export class MouseHandle extends CanvasElement{
     if (this.eventListeners.has('drop')) {
       // tslint:disable-next-line:ban-types
       const dropCB = this.eventListeners.get('drop') as Function;
-      dropCB(this, {cursorX, cursorY});
+      dropCB(cursorX, cursorY);
     }
   }
 

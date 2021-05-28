@@ -1,3 +1,4 @@
+import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
 import { DesignElement } from './design-element';
 
 const defaultImage = 'https://www.digitalroominc.com/uploads/1/0/3/1/103161570/editor/dri-logo_2.png?1516669567';
@@ -51,6 +52,14 @@ export class ImageElement extends DesignElement{
       return this;
     }
 
+    canvasContext.save();
+    const canvasWidth = (this.parentCanvasElement?.width as number);
+    const canvasHeight = (this.parentCanvasElement?.height as number);
+
+    canvasContext.translate(canvasWidth / 2, canvasHeight / 2);
+    canvasContext.rotate(this.rotation * Math.PI / 180);
+    canvasContext.translate(-canvasWidth / 2, -canvasHeight / 2);
+
     canvasContext.drawImage(
       this.imageObj as HTMLImageElement,
       this.left as number,
@@ -66,6 +75,58 @@ export class ImageElement extends DesignElement{
     if (this.isSelected) {
       this.renderResizeHandles(canvasContext);
     }
+
+    canvasContext.restore();
     return this;
+  }
+
+  private resizeNW(mouseX: number, mouseY: number): void {
+    const oldYCoord = this.top as number;
+    const oldXCoord = this.left as number;
+    const width = (this.width as number);
+    const height = (this.height as number);
+
+    this.left = mouseX;
+    this.top = mouseY;
+
+    this.width = width + (oldXCoord - this.left);
+    this.height = height + (oldYCoord - this.top);
+  }
+
+  private resizeNE(mouseX: number, mouseY: number): void {
+    const oldYCoord = this.top as number;
+    const width = (this.width as number);
+    const height = (this.height as number);
+
+    this.top = mouseY;
+    this.width = width - ((this.left as number) + width - mouseX);
+    this.height = height + (oldYCoord - this.top);
+  }
+
+  private resizeSW(mouseX: number, mouseY: number): void {
+    const oldXCoord = this.left as number;
+    const width = (this.width as number);
+    const height = (this.height as number);
+
+    this.coordinates.left = mouseX;
+    this.width = width + (oldXCoord - (this.left as number));
+    this.height = height - ((this.top as number) + height - mouseY);
+  }
+
+  private resizeSE(mouseX: number, mouseY: number): void {
+    const width = (this.width as number);
+    const height = (this.height as number);
+
+    this.width = width - ((this.left as number) + width - mouseX);
+    this.height = height - ((this.top as number) + height - mouseY);
+  }
+
+  resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+    switch (mouseHandleUsed) {
+      case ElementMouseHandles.TOP_LEFT: this.resizeNW(mouseX, mouseY); break;
+      case ElementMouseHandles.TOP_RIGHT: this.resizeNE(mouseX, mouseY); break;
+      case ElementMouseHandles.BOTTOM_LEFT: this.resizeSW(mouseX, mouseY); break;
+      case ElementMouseHandles.BOTTOM_RIGHT: this.resizeSE(mouseX, mouseY); break;
+    }
   }
 }

@@ -46,6 +46,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       designEl?.addEventListener('click', this.onElementClick.bind(this));
       designEl?.addEventListener('drag', this.onElementDrag.bind(this));
       designEl?.addEventListener('drop', this.onElementDrop.bind(this));
+      designEl?.addEventListener('resize', this.onElementResize.bind(this));
     });
   }
 
@@ -72,6 +73,11 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
   private getLocalDesignState(): DesignState {
     return this.localDesignStateSubject.getValue();
+  }
+
+  private onElementResize(element: DesignElement, mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+    element.resize(mouseHandleUsed, mouseX, mouseY);
+    this.renderDesign(this.getLocalDesignState());
   }
 
   private onHoverElement(element: DesignElement): void {

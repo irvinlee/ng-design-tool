@@ -1,3 +1,4 @@
+import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
 import { Observable } from 'rxjs';
 import { ResizeHandles } from './resize-handles';
 import { Dimensions } from './../../types/dimensions';
@@ -11,6 +12,7 @@ export abstract class DesignElement extends CanvasElement{
   resizeHandles = new ResizeHandles();
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
+  rotation = 0;
 
   constructor(
     coordinates?: Coordinates,
@@ -49,6 +51,38 @@ export abstract class DesignElement extends CanvasElement{
     this.resizeHandles.topRightHandle.subscribeToMouseEvents(obs);
     this.resizeHandles.bottomLeftHandle.subscribeToMouseEvents(obs);
     this.resizeHandles.bottomRightHandle.subscribeToMouseEvents(obs);
+
+    this.resizeHandles.topLeftHandle.addEventListener('drag', (cursorX: number, cursorY: number) => {
+      if (this.eventListeners.has('resize')) {
+        // tslint:disable-next-line:ban-types
+        const cb = this.eventListeners.get('resize') as Function;
+        cb(this, ElementMouseHandles.TOP_LEFT, cursorX, cursorY);
+      }
+    });
+
+    this.resizeHandles.topRightHandle.addEventListener('drag', (cursorX: number, cursorY: number) => {
+      if (this.eventListeners.has('resize')) {
+        // tslint:disable-next-line:ban-types
+        const cb = this.eventListeners.get('resize') as Function;
+        cb(this, ElementMouseHandles.TOP_RIGHT, cursorX, cursorY);
+      }
+    });
+
+    this.resizeHandles.bottomLeftHandle.addEventListener('drag', (cursorX: number, cursorY: number) => {
+      if (this.eventListeners.has('resize')) {
+        // tslint:disable-next-line:ban-types
+        const cb = this.eventListeners.get('resize') as Function;
+        cb(this, ElementMouseHandles.BOTTOM_LEFT, cursorX, cursorY);
+      }
+    });
+
+    this.resizeHandles.bottomRightHandle.addEventListener('drag', (cursorX: number, cursorY: number) => {
+      if (this.eventListeners.has('resize')) {
+        // tslint:disable-next-line:ban-types
+        const cb = this.eventListeners.get('resize') as Function;
+        cb(this, ElementMouseHandles.BOTTOM_RIGHT, cursorX, cursorY);
+      }
+    });
   }
 
   unbindMouseEventObservable(): void {
@@ -135,4 +169,5 @@ export abstract class DesignElement extends CanvasElement{
 
   abstract clone(): DesignElement;
   abstract render(canvasRef: CanvasRenderingContext2D): DesignElement;
+  abstract resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void;
 }
