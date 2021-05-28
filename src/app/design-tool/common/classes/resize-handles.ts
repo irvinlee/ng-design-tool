@@ -1,3 +1,4 @@
+import { getRotationHandlePosition } from '../utils';
 import { MouseHandle } from './mouse-handle';
 
 export class ResizeHandles {
@@ -5,6 +6,7 @@ export class ResizeHandles {
   topRightHandle = new MouseHandle(undefined, 'nesw-resize');
   bottomLeftHandle = new MouseHandle(undefined, 'nesw-resize');
   bottomRightHandle = new MouseHandle(undefined, 'nwse-resize');
+  rotateHandle = new MouseHandle(undefined, 'grab');
 
   setPosition(x: number, y: number, width: number, height: number): void{
     this.topLeftHandle.left = x;
@@ -18,6 +20,11 @@ export class ResizeHandles {
 
     this.bottomRightHandle.left = x + width;
     this.bottomRightHandle.top = y + height;
+
+    const rotateHandlePosition = getRotationHandlePosition(x, y, width, height);
+
+    this.rotateHandle.left = rotateHandlePosition.left;
+    this.rotateHandle.top = rotateHandlePosition.top;
   }
 
   render(canvasContext: CanvasRenderingContext2D): void {
@@ -25,6 +32,7 @@ export class ResizeHandles {
     this.topRightHandle.render(canvasContext);
     this.bottomLeftHandle.render(canvasContext);
     this.bottomRightHandle.render(canvasContext);
+    this.rotateHandle.render(canvasContext);
   }
 
   setParentCanvas(canvas: HTMLCanvasElement | undefined): void {
@@ -32,5 +40,6 @@ export class ResizeHandles {
     this.topRightHandle.bindToCanvasElement(canvas);
     this.bottomLeftHandle.bindToCanvasElement(canvas);
     this.bottomRightHandle.bindToCanvasElement(canvas);
+    this.rotateHandle.bindToCanvasElement(canvas);
   }
 }

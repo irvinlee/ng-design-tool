@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DesignToolService } from './../design-tool.service';
 import { AfterViewInit, Component, Input, OnDestroy } from '@angular/core';
-import { generateRandomId } from '../common/utils';
+import { generateRandomId, getBearing, getRotationHandlePosition } from '../common/utils';
 import { DesignState } from '../common/classes/design-state';
 import { DesignElement } from '../common/classes/design-element';
 
@@ -47,6 +47,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       designEl?.addEventListener('drag', this.onElementDrag.bind(this));
       designEl?.addEventListener('drop', this.onElementDrop.bind(this));
       designEl?.addEventListener('resize', this.onElementResize.bind(this));
+      designEl?.addEventListener('rotate', this.onElementRotate.bind(this));
     });
   }
 
@@ -73,6 +74,23 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
   private getLocalDesignState(): DesignState {
     return this.localDesignStateSubject.getValue();
+  }
+
+  private onElementRotate(element: DesignElement, mouseX: number, mouseY: number): void {
+    const rotateHandlePosition = getRotationHandlePosition(
+      element.left as number,
+      element.top as number,
+      element.width as number,
+      element.height as number
+    );
+
+    element.bearing = getBearing(
+      rotateHandlePosition.left as number,
+      rotateHandlePosition.top as number,
+      mouseX,
+      mouseY
+    );
+    this.renderDesign(this.getLocalDesignState());
   }
 
   private onElementResize(element: DesignElement, mouseHandleUsed: string, mouseX: number, mouseY: number): void {

@@ -12,7 +12,7 @@ export abstract class DesignElement extends CanvasElement{
   resizeHandles = new ResizeHandles();
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
-  rotation = 0;
+  bearing = 0;
 
   constructor(
     coordinates?: Coordinates,
@@ -51,6 +51,7 @@ export abstract class DesignElement extends CanvasElement{
     this.resizeHandles.topRightHandle.subscribeToMouseEvents(obs);
     this.resizeHandles.bottomLeftHandle.subscribeToMouseEvents(obs);
     this.resizeHandles.bottomRightHandle.subscribeToMouseEvents(obs);
+    this.resizeHandles.rotateHandle.subscribeToMouseEvents(obs);
 
     this.resizeHandles.topLeftHandle.addEventListener('drag', (cursorX: number, cursorY: number) => {
       if (this.eventListeners.has('resize')) {
@@ -83,6 +84,14 @@ export abstract class DesignElement extends CanvasElement{
         cb(this, ElementMouseHandles.BOTTOM_RIGHT, cursorX, cursorY);
       }
     });
+
+    this.resizeHandles.rotateHandle.addEventListener('drag', (cursorX: number, cursorY: number) => {
+      if (this.eventListeners.has('rotate')) {
+        // tslint:disable-next-line:ban-types
+        const cb = this.eventListeners.get('rotate') as Function;
+        cb(this, cursorX, cursorY);
+      }
+    });
   }
 
   unbindMouseEventObservable(): void {
@@ -91,6 +100,7 @@ export abstract class DesignElement extends CanvasElement{
     this.resizeHandles.topLeftHandle.unsubscribeMouseEvents();
     this.resizeHandles.topLeftHandle.unsubscribeMouseEvents();
     this.resizeHandles.topLeftHandle.unsubscribeMouseEvents();
+    this.resizeHandles.rotateHandle.unsubscribeMouseEvents();
   }
 
   displayOutline(canvasContext: CanvasRenderingContext2D): void {

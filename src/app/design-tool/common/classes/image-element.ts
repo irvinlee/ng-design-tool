@@ -57,7 +57,7 @@ export class ImageElement extends DesignElement{
     const canvasHeight = (this.parentCanvasElement?.height as number);
 
     canvasContext.translate(canvasWidth / 2, canvasHeight / 2);
-    canvasContext.rotate(this.rotation * Math.PI / 180);
+    canvasContext.rotate(this.bearing * Math.PI / 180);
     canvasContext.translate(-canvasWidth / 2, -canvasHeight / 2);
 
     canvasContext.drawImage(
