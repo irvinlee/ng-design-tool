@@ -3,7 +3,7 @@ import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 
 const DEFAULT_TOP = 100;
-const DEFAULT_LEFT = 100;
+const DEFAULT_LEFT = 200;
 
 export abstract class CanvasElement {
   // tslint:disable-next-line:variable-name

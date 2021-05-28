@@ -1,3 +1,4 @@
+import { degToRad } from '../utils';
 import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
 import { DesignElement } from './design-element';
 
@@ -52,18 +53,23 @@ export class ImageElement extends DesignElement{
       return this;
     }
 
-    canvasContext.save();
-    const canvasWidth = (this.parentCanvasElement?.width as number);
-    const canvasHeight = (this.parentCanvasElement?.height as number);
+    const left = this.left as number;
+    const top = this.top as number;
+    const width = this.width as number;
+    const height = this.height as number;
 
-    canvasContext.translate(canvasWidth / 2, canvasHeight / 2);
-    canvasContext.rotate(this.bearing * Math.PI / 180);
-    canvasContext.translate(-canvasWidth / 2, -canvasHeight / 2);
+    canvasContext.save();
+    const xCenter = left + (width / 2);
+    const yCenter = top + (height / 2);
+    const angle = degToRad(this.bearing);
+
+    canvasContext.translate(xCenter, yCenter);
+    canvasContext.rotate(angle);
 
     canvasContext.drawImage(
       this.imageObj as HTMLImageElement,
-      this.left as number,
-      this.top as number,
+       -width / 2,
+      -height / 2,
       this.width as number,
       this.height as number
     );
@@ -71,6 +77,9 @@ export class ImageElement extends DesignElement{
     if (this.isHovered || this.isSelected) {
       this.displayOutline(canvasContext);
     }
+
+    canvasContext.rotate(-angle);
+    canvasContext.translate(-xCenter, -yCenter);
 
     if (this.isSelected) {
       this.renderResizeHandles(canvasContext);

@@ -4,6 +4,7 @@ import { ResizeHandles } from './resize-handles';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
+import { degToRad } from '../utils';
 
 export abstract class DesignElement extends CanvasElement{
   // tslint:disable-next-line:variable-name
@@ -12,7 +13,7 @@ export abstract class DesignElement extends CanvasElement{
   resizeHandles = new ResizeHandles();
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
-  bearing = 0;
+  bearing = 45;
 
   constructor(
     coordinates?: Coordinates,
@@ -104,14 +105,32 @@ export abstract class DesignElement extends CanvasElement{
   }
 
   displayOutline(canvasContext: CanvasRenderingContext2D): void {
+    const left = (this.left as number) - 5;
+    const top = (this.top as number) - 5;
+    const width = (this.width as number) + 10;
+    const height = (this.height as number) + 5;
+
+    // canvasContext.save();
+
+    // const xCenter = left + (width / 2);
+    // const yCenter = top + (height / 2);
+    // const angle = degToRad(this.bearing);
+
+    // canvasContext.translate(xCenter, yCenter);
+    // canvasContext.rotate(angle);
+
     canvasContext.beginPath();
     canvasContext.strokeStyle = '#000';
     canvasContext.strokeRect(
-      (this.left as number) - 5,
-      (this.top  as number) - 5,
-      (this.width  as number) + 10,
-      (this.height  as number) + 5
+      -width / 2,
+      -height / 2,
+      width,
+      height
     );
+
+    // canvasContext.rotate(-angle);
+    // canvasContext.translate(-xCenter, -yCenter);
+    // canvasContext.restore();
   }
 
   renderResizeHandles(canvasContext: CanvasRenderingContext2D): void {
@@ -119,7 +138,8 @@ export abstract class DesignElement extends CanvasElement{
       (this.left as number) - 5,
       (this.top as number) - 5,
       (this.width  as number) + 10,
-      (this.height  as number) + 5
+      (this.height  as number) + 5,
+      this.bearing
     );
     this.resizeHandles.render(canvasContext);
   }

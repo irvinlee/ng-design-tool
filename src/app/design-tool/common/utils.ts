@@ -21,9 +21,28 @@ export function getBearing(x1: number, y1: number, x2: number, y2: number): numb
   return RAD2DEG * theta;
 }
 
+export function degToRad(degrees: number): number {
+  return degrees * Math.PI / 180;
+}
+
 export function getRotationHandlePosition(x: number, y: number, width: number, height: number): {top: number, left: number} {
   return {
     top: y - 20,
     left: x + (width / 2)
+  };
+}
+
+export function getCoordinatesAfterRotation(
+  x: number,
+  y: number,
+  bearing: number,
+  pivotPointX = 0,
+  pivotPointY = 0
+): {x: number, y: number} {
+  const bearingRad = degToRad(bearing);
+
+  return {
+    x: (x - pivotPointX) * Math.cos(bearingRad) - (y - pivotPointY)  * Math.sin(bearingRad) + pivotPointX,
+    y: (y - pivotPointY) * Math.cos(bearingRad) + (x - pivotPointX) * Math.sin(bearingRad) + pivotPointY,
   };
 }
