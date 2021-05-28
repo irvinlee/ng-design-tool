@@ -17,6 +17,7 @@ export class ImageElement extends DesignElement{
       elementToClone.isHovered,
       elementToClone.isSelected,
       elementToClone.zIndex,
+      elementToClone.bearing,
       elementToClone.eventListeners
     );
 
@@ -59,8 +60,8 @@ export class ImageElement extends DesignElement{
     const height = this.height as number;
 
     canvasContext.save();
-    const xCenter = left + (width / 2);
-    const yCenter = top + (height / 2);
+    const xCenter = this.midpointX as number;
+    const yCenter = this.midpointY as number;
     const angle = degToRad(this.bearing);
 
     canvasContext.translate(xCenter, yCenter);

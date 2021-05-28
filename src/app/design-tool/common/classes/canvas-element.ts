@@ -1,6 +1,7 @@
 import { Observable, Subscription } from 'rxjs';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
+import { getRelativeCursorCoordinates } from '../utils';
 
 const DEFAULT_TOP = 100;
 const DEFAULT_LEFT = 200;
@@ -95,7 +96,7 @@ export abstract class CanvasElement {
     this.mouseSubscription = obs.subscribe((data) => {
       if (data) {
         const {event, type} = data;
-        const {x, y} = this.getRelativeCursorCoordinates(event);
+        const {x, y} = getRelativeCursorCoordinates(event);
 
         if (this.checkIsHovered(x, y)) {
           switch (type) {
@@ -130,6 +131,7 @@ export abstract class CanvasElement {
             case 'mousedown':
               this.hasTriggeredMouseDownEvent = true;
               this.lastMouseDownTimestamp = Date.now();
+              this.onMouseDown();
               break;
           }
 
@@ -147,14 +149,6 @@ export abstract class CanvasElement {
     this.hasTriggeredMouseDownEvent = false;
     this.hasTriggeredDragEvent = false;
     this.hasTriggeredClickEvent = false;
-  }
-
-  private getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {
-    const target = event.target as HTMLCanvasElement;
-    return {
-      x: event.clientX - target.offsetLeft,
-      y: event.clientY - target.offsetTop,
-    };
   }
 
   abstract onClick(): void;

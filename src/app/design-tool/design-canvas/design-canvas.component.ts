@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DesignToolService } from './../design-tool.service';
 import { AfterViewInit, Component, Input, OnDestroy } from '@angular/core';
-import { generateRandomId, getBearing, getRotationHandlePosition } from '../common/utils';
+import { generateRandomId, getBearing, getCoordinatesAfterRotation, getRelativeCursorCoordinates, getRotationHandlePosition } from '../common/utils';
 import { DesignState } from '../common/classes/design-state';
 import { DesignElement } from '../common/classes/design-element';
 
@@ -19,6 +19,8 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   private mouseEventSubject: BehaviorSubject<{event: MouseEvent, type: string}|undefined> =
     new BehaviorSubject<{event: MouseEvent, type: string}|undefined>(undefined);
   private selectedElement: DesignElement | undefined;
+  private isRotatingElement = false;
+  private selectedElementClone: DesignElement | undefined;
 
   localDesignState = this.localDesignStateSubject.asObservable();
   mouseEventObservable = this.mouseEventSubject.asObservable();
@@ -47,7 +49,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       designEl?.addEventListener('drag', this.onElementDrag.bind(this));
       designEl?.addEventListener('drop', this.onElementDrop.bind(this));
       designEl?.addEventListener('resize', this.onElementResize.bind(this));
-      designEl?.addEventListener('rotate', this.onElementRotate.bind(this));
+      designEl?.addEventListener('startRotate', this.onElementRotateStart.bind(this));
     });
   }
 
@@ -70,26 +72,54 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   ngOnDestroy(): void {
+    this._unbindCanvasMouseEvents();
   }
 
   private getLocalDesignState(): DesignState {
     return this.localDesignStateSubject.getValue();
   }
 
-  private onElementRotate(element: DesignElement, mouseX: number, mouseY: number): void {
-    const rotateHandlePosition = getRotationHandlePosition(
-      element.left as number,
-      element.top as number,
-      element.width as number,
-      element.height as number
+  private onElementRotateStart(): void {
+    this.isRotatingElement = true;
+    this.selectedElementClone = this.selectedElement?.clone();
+    console.log('Start rotate');
+  }
+
+  private onElementRotateEnd(): void {
+    this.isRotatingElement = false;
+    this.selectedElementClone = undefined;
+
+    // unsubscribe all mouse event subscriptions in the elements
+    this.getLocalDesignState().elements.forEach(designEl => {
+      (designEl as DesignElement).unbindMouseEventObservable();
+    });
+    console.log(this.getLocalDesignState());
+    // commit element update to the master copy of the Design State
+    // instantiate a brand new object to clear all previous references..
+    this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));
+  }
+
+  private rotateElement(mouseX: number, mouseY: number): void {
+    const baseElement = this.selectedElementClone as DesignElement;
+    const element = this.selectedElement as DesignElement;
+    element.resizeHandles.rotateHandle.top = mouseY - 4;
+    element.resizeHandles.rotateHandle.left = mouseX - 4;
+
+    const rotatedPosition = getCoordinatesAfterRotation(
+      baseElement.left as number,
+      baseElement.top as number,
+      baseElement.bearing,
+      baseElement.midpointX,
+      baseElement.midpointY
     );
 
     element.bearing = getBearing(
-      rotateHandlePosition.left as number,
-      rotateHandlePosition.top as number,
+      rotatedPosition.x as number,
+      rotatedPosition.y as number,
       mouseX,
       mouseY
     );
+
     this.renderDesign(this.getLocalDesignState());
   }
 
@@ -109,9 +139,12 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onElementClick(element: DesignElement): void {
+    console.log(element);
+
     this.getLocalDesignState().elements.forEach((designEl: DesignElement | undefined) => {
       if (designEl === element) {
         designEl.isSelected = true;
+        this.selectedElement = designEl;
       } else {
         (designEl as DesignElement).isSelected = false;
       }
@@ -136,7 +169,12 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onCanvasMouseMove(event: MouseEvent): void {
-    this.mouseEventSubject.next({event, type: 'mousemove'});
+    if (this.isRotatingElement) {
+      const {x, y} = getRelativeCursorCoordinates(event);
+      this.rotateElement(x, y);
+    } else {
+      this.mouseEventSubject.next({event, type: 'mousemove'});
+    }
   }
 
   private onCanvasClick(event: MouseEvent): void {
@@ -148,6 +186,10 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onCanvasMouseUp(event: MouseEvent): void {
+    if (this.isRotatingElement) {
+      this.onElementRotateEnd();
+    }
+
     this.mouseEventSubject.next({event, type: 'mouseup'});
   }
 

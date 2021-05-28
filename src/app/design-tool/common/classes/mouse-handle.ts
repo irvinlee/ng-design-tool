@@ -56,7 +56,11 @@ export class MouseHandle extends CanvasElement{
   }
 
   onMouseDown(): void {
-   console.log('mouse down');
+   if (this.eventListeners.has('mousedown')) {
+      // tslint:disable-next-line:ban-types
+      const dragCB = this.eventListeners.get('mousedown') as Function;
+      dragCB();
+    }
   }
 
   onDrag(cursorX: number, cursorY: number): void {

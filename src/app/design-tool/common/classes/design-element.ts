@@ -13,7 +13,7 @@ export abstract class DesignElement extends CanvasElement{
   resizeHandles = new ResizeHandles();
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
-  bearing = 45;
+  bearing = 0;
 
   constructor(
     coordinates?: Coordinates,
@@ -21,13 +21,14 @@ export abstract class DesignElement extends CanvasElement{
     isHovered?: boolean,
     isSelected?: boolean,
     zIndex?: number,
+    bearing?: number,
     // tslint:disable-next-line:ban-types
     eventListeners?: Map<string, Function>
   ) {
     super(coordinates, dimensions, isHovered);
     this._isSelected = !!isSelected;
     this.zIndex = zIndex || 0;
-
+    this.bearing = bearing || 0;
     if (eventListeners) {
       this.eventListeners = new Map(eventListeners);
     }
@@ -86,13 +87,21 @@ export abstract class DesignElement extends CanvasElement{
       }
     });
 
-    this.resizeHandles.rotateHandle.addEventListener('drag', (cursorX: number, cursorY: number) => {
-      if (this.eventListeners.has('rotate')) {
+    this.resizeHandles.rotateHandle.addEventListener('mousedown', (cursorX: number, cursorY: number) => {
+      if (this.eventListeners.has('startRotate')) {
         // tslint:disable-next-line:ban-types
-        const cb = this.eventListeners.get('rotate') as Function;
-        cb(this, cursorX, cursorY);
+        const cb = this.eventListeners.get('startRotate') as Function;
+        cb();
       }
     });
+  }
+
+  get midpointX(): number {
+    return (this.left as number) + ((this.width as number) / 2);
+  }
+
+  get midpointY(): number {
+    return (this.top as number) + ((this.height as number) / 2);
   }
 
   unbindMouseEventObservable(): void {
