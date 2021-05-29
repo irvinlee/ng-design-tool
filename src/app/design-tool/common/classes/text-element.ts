@@ -24,7 +24,9 @@ export class TextElement extends DesignElement{
       elementToClone.dimensions,
       elementToClone.isHovered,
       elementToClone.isSelected,
-      elementToClone.zIndex
+      elementToClone.zIndex,
+      elementToClone.bearing,
+      elementToClone.eventListeners
     );
     this.value = elementToClone.value;
     this.format = {...elementToClone.format};

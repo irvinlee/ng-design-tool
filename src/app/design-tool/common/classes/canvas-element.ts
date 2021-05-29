@@ -14,18 +14,19 @@ export abstract class CanvasElement {
 
   private hasTriggeredMouseDownEvent = false;
   private hasTriggeredDragEvent = false;
-  private hasTriggeredClickEvent = false;
   private mouseSubscription?: Subscription;
   private lastMouseDownTimestamp: number | undefined;
 
   protected parentCanvasElement: HTMLCanvasElement | undefined;
 
+  zIndex = 0;
   isHovered = false;
 
-  constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false) {
+  constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false, zIndex = 0) {
     this._coordinates = {top: coordinates?.top || DEFAULT_TOP, left: coordinates?.left || DEFAULT_LEFT};
     this._dimensions = {width: dimensions?.width, height: dimensions?.height};
     this.isHovered = isHovered;
+    this.zIndex = zIndex;
   }
 
   get height(): number | undefined {
@@ -121,7 +122,6 @@ export abstract class CanvasElement {
                   this.onDrop(x, y);
                   // end drag...
                   this.hasTriggeredDragEvent = false;
-                  this.hasTriggeredClickEvent = false;
                 } else {
                   this.onMouseUp();
                 }
@@ -148,7 +148,6 @@ export abstract class CanvasElement {
     this.isHovered = false;
     this.hasTriggeredMouseDownEvent = false;
     this.hasTriggeredDragEvent = false;
-    this.hasTriggeredClickEvent = false;
   }
 
   abstract onClick(): void;

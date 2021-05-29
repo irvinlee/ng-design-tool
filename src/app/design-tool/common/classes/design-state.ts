@@ -13,12 +13,17 @@ export class DesignState {
   }
 
   insertImage(): DesignState {
-    this.elements.push(new ImageElement());
+    const newImage = new ImageElement();
+    newImage.zIndex = this.elements.length + 1;
+    this.elements.push(newImage);
     return this.clone();
   }
 
   insertText(): DesignState{
-    this.elements.push(new TextElement());
+    const newText = new TextElement();
+    newText.zIndex = this.elements.length + 1;
+
+    this.elements.push(newText);
     return this.clone();
   }
 

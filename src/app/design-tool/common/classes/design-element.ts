@@ -9,7 +9,7 @@ import { degToRad } from '../utils';
 export abstract class DesignElement extends CanvasElement{
   // tslint:disable-next-line:variable-name
   private _isSelected = false;
-  zIndex = 0;
+
   resizeHandles = new ResizeHandles();
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
@@ -25,7 +25,7 @@ export abstract class DesignElement extends CanvasElement{
     // tslint:disable-next-line:ban-types
     eventListeners?: Map<string, Function>
   ) {
-    super(coordinates, dimensions, isHovered);
+    super(coordinates, dimensions, isHovered, zIndex);
     this._isSelected = !!isSelected;
     this.zIndex = zIndex || 0;
     this.bearing = bearing || 0;
