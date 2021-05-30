@@ -1,6 +1,8 @@
+import { CanvasMouseEvent } from './../../types/canvas-mouse-event';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
+import { getRelativeCursorCoordinates } from '../utils';
 
 export class MouseHandle extends CanvasElement{
   // tslint:disable-next-line:ban-types
@@ -25,7 +27,7 @@ export class MouseHandle extends CanvasElement{
     canvasContext.stroke();
   }
 
-  onClick(): void {
+  onClick(canvasMouseEvent: CanvasMouseEvent): void {
     if (this.eventListeners.has('click')) {
       // tslint:disable-next-line:ban-types
       const clickCB = this.eventListeners.get('click') as Function;
@@ -33,13 +35,13 @@ export class MouseHandle extends CanvasElement{
     }
   }
 
-  onMouseMove(): void {
+  onMouseMove(canvasMouseEvent: CanvasMouseEvent): void {
     if (this.parentCanvasElement) {
       (this.parentCanvasElement as HTMLCanvasElement).style.cursor = this.cursor;
     }
   }
 
-  onMouseOut(): void {
+  onMouseOut(canvasMouseEvent: CanvasMouseEvent): void {
     if (this.eventListeners.has('mouseout')) {
       // tslint:disable-next-line:ban-types
       const mouseOutCB = this.eventListeners.get('mouseout') as Function;
@@ -51,34 +53,42 @@ export class MouseHandle extends CanvasElement{
     }
   }
 
-  onMouseUp(): void {
+  onMouseUp(canvasMouseEvent: CanvasMouseEvent): void {
     console.log('mouse up');
   }
 
-  onMouseDown(): void {
-   if (this.eventListeners.has('mousedown')) {
+  onMouseDown(canvasMouseEvent: CanvasMouseEvent): void {
+    if (this.eventListeners.has('mousedown')) {
+      const {mouseEvent} = canvasMouseEvent;
+      const {x, y} = getRelativeCursorCoordinates(mouseEvent);
       // tslint:disable-next-line:ban-types
-      const dragCB = this.eventListeners.get('mousedown') as Function;
-      dragCB();
+      const mouseDownCB = this.eventListeners.get('mousedown') as Function;
+
+      mouseDownCB(x, y);
     }
   }
 
-  onDrag(cursorX: number, cursorY: number): void {
+  onDrag(canvasMouseEvent: CanvasMouseEvent): void {
+    const {mouseEvent, type} = canvasMouseEvent;
+    const {x, y} = getRelativeCursorCoordinates(mouseEvent);
+
     if (this.eventListeners.has('drag')) {
       // tslint:disable-next-line:ban-types
       const dragCB = this.eventListeners.get('drag') as Function;
-      dragCB(cursorX, cursorY);
+      dragCB(x, y);
     }
   }
 
-  onDrop(cursorX: number, cursorY: number): void {
+  onDrop(canvasMouseEvent: CanvasMouseEvent): void {
+    const {mouseEvent, type} = canvasMouseEvent;
+    const {x, y} = getRelativeCursorCoordinates(mouseEvent);
+
     if (this.eventListeners.has('drop')) {
       // tslint:disable-next-line:ban-types
       const dropCB = this.eventListeners.get('drop') as Function;
-      dropCB(cursorX, cursorY);
+      dropCB(x, y);
     }
   }
-
   // tslint:disable-next-line:ban-types
   addEventListener(key: string, callback: Function): void {
     this.eventListeners.set(key, callback);

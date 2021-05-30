@@ -2,7 +2,7 @@ import { degToRad } from '../utils';
 import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
 import { DesignElement } from './design-element';
 
-const defaultImage = 'https://www.digitalroominc.com/uploads/1/0/3/1/103161570/editor/dri-logo_2.png?1516669567';
+const defaultImage = 'https://d2q79iu7y748jz.cloudfront.net/s/_logo/6ebd19753ce733b2f41a9b85de5f5774';
 
 export class ImageElement extends DesignElement{
   src = '';

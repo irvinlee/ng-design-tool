@@ -1,9 +1,12 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { CanvasMouseEvent } from './../types/canvas-mouse-event';
+import { MouseEventHandler } from './../common/classes/mouse-event-handler';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { DesignToolService } from './../design-tool.service';
 import { AfterViewInit, Component, Input, OnDestroy } from '@angular/core';
 import { generateRandomId, getBearing, getCoordinatesAfterRotation, getRelativeCursorCoordinates, getRotationHandlePosition } from '../common/utils';
 import { DesignState } from '../common/classes/design-state';
 import { DesignElement } from '../common/classes/design-element';
+import { CanvasElement } from '../common/classes/canvas-element';
 
 @Component({
   selector: 'app-ypdt-design-canvas',
@@ -21,6 +24,8 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   private selectedElement: DesignElement | undefined;
   private isRotatingElement = false;
   private selectedElementClone: DesignElement | undefined;
+  private mouseEventHandler?: MouseEventHandler;
+  private subscriptions: Array<Subscription> = [];
 
   localDesignState = this.localDesignStateSubject.asObservable();
   mouseEventObservable = this.mouseEventSubject.asObservable();
@@ -34,15 +39,38 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       this.localDesignStateSubject.next(newDesignState);
     });
 
-    this.localDesignState.subscribe((newDesignState) => {
+    this.subscriptions.push(this.localDesignState.subscribe((newDesignState) => {
       this.renderDesign(newDesignState);
       this.bindDesignElementMouseEvents(newDesignState);
+
+      if (this.mouseEventHandler) {
+        this.mouseEventHandler.setElements(newDesignState.elements as Map<string, CanvasElement>);
+        this.subscriptions.push(this.mouseEventHandler.mouseEventObservable.subscribe(
+          (canvasMouseEvent: CanvasMouseEvent) => {
+            const { targetKey } = canvasMouseEvent;
+            if (targetKey) {
+              const affectedElement = this.getLocalDesignState().elements.get(targetKey as string);
+              affectedElement?.handleMouseEvent(canvasMouseEvent);
+            } else if (canvasMouseEvent.type === 'click') { // user clicked on the canvas without hitting any elements
+              this.clearElementSelection();
+            }
+          }
+        ));
+      }
+    }));
+  }
+
+  clearElementSelection(): void {
+    this.selectedElement = undefined;
+    this.getLocalDesignState().elements.forEach((designEl) => {
+      (designEl as DesignElement).isSelected = false;
     });
+    this.renderDesign(this.getLocalDesignState());
   }
 
   bindDesignElementMouseEvents(designState: DesignState): void {
     designState.elements.forEach((designEl) => {
-      designEl?.bindMouseEventObservable(this.mouseEventObservable as Observable<{event: MouseEvent, type: string}>);
+      designEl?.bindMouseEvents();
       designEl?.addEventListener('mousemove', this.onHoverElement.bind(this));
       designEl?.addEventListener('mouseout', this.onElementMouseOut.bind(this));
       designEl?.addEventListener('click', this.onElementClick.bind(this));
@@ -68,11 +96,13 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   ngAfterViewInit(): void {
     this.canvasRef = document.getElementById(this.id) as HTMLCanvasElement;
     this.canvasContext = this.canvasRef.getContext('2d') as CanvasRenderingContext2D;
-    this._bindCanvasMouseEvents();
+    this.mouseEventHandler = new MouseEventHandler(this.canvasRef);
+    this.mouseEventHandler.setElements(this.localDesignStateSubject.getValue().elements as Map<string, CanvasElement>);
   }
 
   ngOnDestroy(): void {
-    this._unbindCanvasMouseEvents();
+    this.mouseEventHandler?.unbindCanvasMouseEvents();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private getLocalDesignState(): DesignState {
@@ -89,11 +119,6 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     this.isRotatingElement = false;
     this.selectedElementClone = undefined;
 
-    // unsubscribe all mouse event subscriptions in the elements
-    this.getLocalDesignState().elements.forEach(designEl => {
-      (designEl as DesignElement).unbindMouseEventObservable();
-    });
-    console.log(this.getLocalDesignState());
     // commit element update to the master copy of the Design State
     // instantiate a brand new object to clear all previous references..
     this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));
@@ -139,8 +164,6 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onElementClick(element: DesignElement): void {
-    console.log(element);
-
     this.getLocalDesignState().elements.forEach((designEl: DesignElement | undefined) => {
       if (designEl === element) {
         designEl.isSelected = true;
@@ -159,10 +182,6 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onElementDrop(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
-    // unsubscribe all mouse event subscriptions in the elements
-    this.getLocalDesignState().elements.forEach(designEl => {
-      (designEl as DesignElement).unbindMouseEventObservable();
-    });
     // commit element update to the master copy of the Design State
     // instantiate a brand new object to clear all previous references..
     this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));

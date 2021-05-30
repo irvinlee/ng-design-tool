@@ -1,3 +1,4 @@
+import { CanvasMouseEvent } from './../../types/canvas-mouse-event';
 import { Observable, Subscription } from 'rxjs';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
@@ -88,73 +89,58 @@ export abstract class CanvasElement {
 
     return mouseX >= (this.left as number) - 5 &&
           mouseX <= (this.left as number) + (this.width as number) + 10 &&
-          mouseY >= (this.top as number) - 5 &&
+          mouseY >= (this.top as number) - 15 &&
           mouseY <= (this.top as number) + (this.height as number) + 10;
   }
 
-  subscribeToMouseEvents(obs: Observable<{event: MouseEvent, type: string}>): void {
-    // clear previous subscriptions if any...
-    this.mouseSubscription = obs.subscribe((data) => {
-      if (data) {
-        const {event, type} = data;
-        const {x, y} = getRelativeCursorCoordinates(event);
+  handleMouseEvent(canvasMouseEvent: CanvasMouseEvent): void {
+    const {type} = canvasMouseEvent;
 
-        if (this.checkIsHovered(x, y)) {
-          switch (type) {
-            case 'mousemove':
-              this.isHovered = true;
+    switch (type) {
+      case 'mousemove':
+        this.isHovered = true;
 
-              if (this.hasTriggeredMouseDownEvent) {
-                this.hasTriggeredDragEvent = true;
-                this.onDrag(x, y);
-              } else {
-                this.onMouseMove();
-              }
-              break;
-            case 'mouseup':
-              // if the user held the mouse for less than 150ms, we'll consider it a click..
-              if (Date.now() - (this.lastMouseDownTimestamp as number) < 150) {
-                this.onClick();
-                this.hasTriggeredMouseDownEvent = false;
-              } else {
-                this.hasTriggeredMouseDownEvent = false;
-                if (this.hasTriggeredDragEvent) {
-                  this.onDrop(x, y);
-                  // end drag...
-                  this.hasTriggeredDragEvent = false;
-                } else {
-                  this.onMouseUp();
-                }
-              }
-              this.lastMouseDownTimestamp = undefined;
-              break;
-            case 'mousedown':
-              this.hasTriggeredMouseDownEvent = true;
-              this.lastMouseDownTimestamp = Date.now();
-              this.onMouseDown();
-              break;
-          }
-
-        } else if (this.isHovered){
-          this.isHovered = false;
-          this.onMouseOut();
+        if (this.hasTriggeredMouseDownEvent) {
+          this.hasTriggeredDragEvent = true;
+          this.onDrag(canvasMouseEvent);
+        } else {
+          this.onMouseMove(canvasMouseEvent);
         }
-      }
-    });
+        break;
+      case 'mouseup':
+        // if the user held the mouse for less than 150ms, we'll consider it a click..
+        if (Date.now() - (this.lastMouseDownTimestamp as number) < 150) {
+          this.onClick(canvasMouseEvent);
+          this.hasTriggeredMouseDownEvent = false;
+        } else {
+          this.hasTriggeredMouseDownEvent = false;
+          if (this.hasTriggeredDragEvent) {
+            this.onDrop(canvasMouseEvent);
+            // end drag...
+            this.hasTriggeredDragEvent = false;
+          } else {
+            this.onMouseUp(canvasMouseEvent);
+          }
+        }
+        this.lastMouseDownTimestamp = undefined;
+        break;
+      case 'mousedown':
+        this.hasTriggeredMouseDownEvent = true;
+        this.lastMouseDownTimestamp = Date.now();
+        this.onMouseDown(canvasMouseEvent);
+        break;
+      case 'mouseout':
+        this.isHovered = false;
+        this.onMouseOut(canvasMouseEvent);
+        break;
+    }
   }
 
-  unsubscribeMouseEvents(): void {
-    this.mouseSubscription?.unsubscribe();
-    this.isHovered = false;
-    this.hasTriggeredMouseDownEvent = false;
-    this.hasTriggeredDragEvent = false;
-  }
-
-  abstract onClick(): void;
-  abstract onMouseMove(): void;
-  abstract onMouseOut(): void;
-  abstract onMouseUp(): void;
-  abstract onMouseDown(): void;
-  abstract onDrag(cursorX: number, cursorY: number): void;
-  abstract onDrop(cursorX: number, cursorY: number): void;
+  abstract onClick(canvasMouseEvent: CanvasMouseEvent): void;
+  abstract onMouseMove(canvasMouseEvent: CanvasMouseEvent): void;
+  abstract onMouseOut(canvasMouseEvent: CanvasMouseEvent): void;
+  abstract onMouseUp(canvasMouseEvent: CanvasMouseEvent): void;
+  abstract onMouseDown(canvasMouseEvent: CanvasMouseEvent): void;
+  abstract onDrag(canvasMouseEvent: CanvasMouseEvent): void;
+  abstract onDrop(canvasMouseEvent: CanvasMouseEvent): void;
 }

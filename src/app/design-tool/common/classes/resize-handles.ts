@@ -1,4 +1,5 @@
 import { getCoordinatesAfterRotation, getRotationHandlePosition } from '../utils';
+import { CanvasElement } from './canvas-element';
 import { MouseHandle } from './mouse-handle';
 
 export class ResizeHandles {
@@ -50,5 +51,15 @@ export class ResizeHandles {
     this.bottomLeftHandle.bindToCanvasElement(canvas);
     this.bottomRightHandle.bindToCanvasElement(canvas);
     this.rotateHandle.bindToCanvasElement(canvas);
+  }
+
+  get elements(): Array<CanvasElement> {
+    return [
+      this.topLeftHandle,
+      this.topRightHandle,
+      this.bottomLeftHandle,
+      this.bottomRightHandle,
+      this.rotateHandle
+    ];
   }
 }
