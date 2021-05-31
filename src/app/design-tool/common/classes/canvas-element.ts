@@ -1,8 +1,6 @@
 import { CanvasMouseEvent } from './../../types/canvas-mouse-event';
-import { Observable, Subscription } from 'rxjs';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
-import { getRelativeCursorCoordinates } from '../utils';
 
 const DEFAULT_TOP = 100;
 const DEFAULT_LEFT = 200;
@@ -12,11 +10,6 @@ export abstract class CanvasElement {
   private _coordinates = {} as Coordinates;
   // tslint:disable-next-line:variable-name
   private _dimensions = {} as Dimensions;
-
-  private hasTriggeredMouseDownEvent = false;
-  private hasTriggeredDragEvent = false;
-  private mouseSubscription?: Subscription;
-  private lastMouseDownTimestamp: number | undefined;
 
   protected parentCanvasElement: HTMLCanvasElement | undefined;
 
@@ -89,7 +82,7 @@ export abstract class CanvasElement {
 
     return mouseX >= (this.left as number) - 5 &&
           mouseX <= (this.left as number) + (this.width as number) + 10 &&
-          mouseY >= (this.top as number) - 15 &&
+          mouseY >= (this.top as number) - 10 &&
           mouseY <= (this.top as number) + (this.height as number) + 10;
   }
 
@@ -98,39 +91,21 @@ export abstract class CanvasElement {
 
     switch (type) {
       case 'mousemove':
-        this.isHovered = true;
-
-        if (this.hasTriggeredMouseDownEvent) {
-          this.hasTriggeredDragEvent = true;
-          this.onDrag(canvasMouseEvent);
-        } else {
-          this.onMouseMove(canvasMouseEvent);
-        }
+        this.onMouseMove(canvasMouseEvent);
         break;
       case 'mouseup':
-        // if the user held the mouse for less than 150ms, we'll consider it a click..
-        if (Date.now() - (this.lastMouseDownTimestamp as number) < 150) {
-          this.onClick(canvasMouseEvent);
-          this.hasTriggeredMouseDownEvent = false;
-        } else {
-          this.hasTriggeredMouseDownEvent = false;
-          if (this.hasTriggeredDragEvent) {
-            this.onDrop(canvasMouseEvent);
-            // end drag...
-            this.hasTriggeredDragEvent = false;
-          } else {
-            this.onMouseUp(canvasMouseEvent);
-          }
-        }
-        this.lastMouseDownTimestamp = undefined;
+        this.onMouseUp(canvasMouseEvent);
         break;
       case 'mousedown':
-        this.hasTriggeredMouseDownEvent = true;
-        this.lastMouseDownTimestamp = Date.now();
         this.onMouseDown(canvasMouseEvent);
         break;
+      case 'drag':
+        this.onDrag(canvasMouseEvent);
+        break;
+      case 'drop':
+        this.onDrop(canvasMouseEvent);
+        break;
       case 'mouseout':
-        this.isHovered = false;
         this.onMouseOut(canvasMouseEvent);
         break;
     }

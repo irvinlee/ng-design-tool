@@ -10,7 +10,7 @@ export class MouseHandle extends CanvasElement{
   cursor = 'default';
 
   constructor(coordinates?: Coordinates, cursor?: string) {
-    super(coordinates, {width: 8, height: 8} as Dimensions);
+    super(coordinates, {width: 12, height: 12} as Dimensions);
     this.cursor = cursor || 'default';
   }
 

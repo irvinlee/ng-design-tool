@@ -27,7 +27,7 @@ export function degToRad(degrees: number): number {
 
 export function getRotationHandlePosition(x: number, y: number, width: number, height: number): {top: number, left: number} {
   return {
-    top: y - 10,
+    top: y - 20,
     left: x + (width / 2)
   };
 }

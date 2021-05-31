@@ -47,11 +47,13 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
         this.mouseEventHandler.setElements(newDesignState.elements as Map<string, CanvasElement>);
         this.subscriptions.push(this.mouseEventHandler.mouseEventObservable.subscribe(
           (canvasMouseEvent: CanvasMouseEvent) => {
-            const { targetKey } = canvasMouseEvent;
+            const { targetKey, mouseEvent, type } = canvasMouseEvent;
+            console.log(canvasMouseEvent);
+
             if (targetKey) {
               const affectedElement = this.getLocalDesignState().elements.get(targetKey as string);
               affectedElement?.handleMouseEvent(canvasMouseEvent);
-            } else if (canvasMouseEvent.type === 'click') { // user clicked on the canvas without hitting any elements
+            } else if (!targetKey && canvasMouseEvent.type === 'click') { // user clicked on the canvas without hitting any elements
               this.clearElementSelection();
             }
           }
@@ -70,7 +72,6 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
   bindDesignElementMouseEvents(designState: DesignState): void {
     designState.elements.forEach((designEl) => {
-      designEl?.bindMouseEvents();
       designEl?.addEventListener('mousemove', this.onHoverElement.bind(this));
       designEl?.addEventListener('mouseout', this.onElementMouseOut.bind(this));
       designEl?.addEventListener('click', this.onElementClick.bind(this));
@@ -110,12 +111,13 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   private onElementRotateStart(): void {
+    console.log('ROTATE START!');
     this.isRotatingElement = true;
     this.selectedElementClone = this.selectedElement?.clone();
-    console.log('Start rotate');
   }
 
   private onElementRotateEnd(): void {
+    console.log('ROTATE END!');
     this.isRotatingElement = false;
     this.selectedElementClone = undefined;
 
@@ -185,44 +187,5 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     // commit element update to the master copy of the Design State
     // instantiate a brand new object to clear all previous references..
     this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));
-  }
-
-  private onCanvasMouseMove(event: MouseEvent): void {
-    if (this.isRotatingElement) {
-      const {x, y} = getRelativeCursorCoordinates(event);
-      this.rotateElement(x, y);
-    } else {
-      this.mouseEventSubject.next({event, type: 'mousemove'});
-    }
-  }
-
-  private onCanvasClick(event: MouseEvent): void {
-    this.mouseEventSubject.next({event, type: 'click'});
-  }
-
-  private onCanvasMouseDown(event: MouseEvent): void {
-    this.mouseEventSubject.next({event, type: 'mousedown'});
-  }
-
-  private onCanvasMouseUp(event: MouseEvent): void {
-    if (this.isRotatingElement) {
-      this.onElementRotateEnd();
-    }
-
-    this.mouseEventSubject.next({event, type: 'mouseup'});
-  }
-
-  private _bindCanvasMouseEvents(): void {
-    this.canvasRef?.addEventListener('mousemove', this.onCanvasMouseMove.bind(this));
-    this.canvasRef?.addEventListener('click', this.onCanvasClick.bind(this));
-    this.canvasRef?.addEventListener('mousedown', this.onCanvasMouseDown.bind(this));
-    this.canvasRef?.addEventListener('mouseup', this.onCanvasMouseUp.bind(this));
-  }
-
-  private _unbindCanvasMouseEvents(): void {
-    this.canvasRef?.removeEventListener('mousemove', this.onCanvasMouseMove.bind(this));
-    this.canvasRef?.removeEventListener('click', this.onCanvasClick.bind(this));
-    this.canvasRef?.removeEventListener('mousedown', this.onCanvasMouseDown.bind(this));
-    this.canvasRef?.removeEventListener('mouseup', this.onCanvasMouseUp.bind(this));
   }
 }

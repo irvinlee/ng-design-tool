@@ -7,6 +7,7 @@ export class MouseEventHandler {
   private canvasElements: Map<string, CanvasElement> = new Map();
   private mouseEventBehavior: BehaviorSubject<CanvasMouseEvent> = new BehaviorSubject({} as CanvasMouseEvent);
   private previouslyHoveredElementKey = '';
+  private draggedElementKey = '';
   mouseEventObservable = this.mouseEventBehavior.asObservable();
 
   constructor(private canvasRef: HTMLCanvasElement) {
@@ -46,12 +47,35 @@ export class MouseEventHandler {
     const {x, y} = getRelativeCursorCoordinates(eventObj);
     const affectedElementKey = elementKey || this.getAffectedElementKey(x, y);
 
-    this.mouseEventBehavior.next({
+    if (type === 'mousedown' && affectedElementKey) {
+      this.draggedElementKey = affectedElementKey;
+    }
+
+    if (this.draggedElementKey) {
+      if (type === 'mousemove' ) {
+        this.mouseEventBehavior.next({
+          target: this.canvasElements.get(this.draggedElementKey),
+          targetKey: this.draggedElementKey,
+          mouseEvent: eventObj,
+          type: 'drag'
+        });
+      } else if (type === 'mouseup'){
+        this.mouseEventBehavior.next({
+          target: this.canvasElements.get(this.draggedElementKey),
+          targetKey: this.draggedElementKey,
+          mouseEvent: eventObj,
+          type: 'drop'
+        });
+        this.draggedElementKey = '';
+      }
+    } else {
+      this.mouseEventBehavior.next({
       target: this.canvasElements.get(affectedElementKey),
       targetKey: affectedElementKey,
       mouseEvent: eventObj,
       type
     });
+    }
   }
 
   onMouseMove(event: MouseEvent): void {
