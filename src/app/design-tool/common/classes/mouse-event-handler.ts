@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { CanvasElement } from './canvas-element';
 import { getRelativeCursorCoordinates } from '../utils';
 import { DesignElement } from './design-element';
+import throttle from 'lodash.throttle';
 
 export class MouseEventHandler {
   private designElement: Map<string, DesignElement> = new Map();
@@ -22,13 +23,13 @@ export class MouseEventHandler {
   }
 
   private bindCanvasMouseEvents = (): void => {
-    this.canvasRef?.addEventListener('mousemove', this.onMouseMove);
+    this.canvasRef?.addEventListener('mousemove', this.throttledMouseMove);
     this.canvasRef?.addEventListener('mousedown', this.onMouseMove);
     this.canvasRef?.addEventListener('mouseup', this.onMouseUp);
   }
 
   unbindCanvasMouseEvents = (): void => {
-    this.canvasRef?.removeEventListener('mousemove', this.onMouseMove);
+    this.canvasRef?.removeEventListener('mousemove', this.throttledMouseMove);
     this.canvasRef?.removeEventListener('mousedown', this.onMouseDown);
     this.canvasRef?.removeEventListener('mouseup', this.onMouseUp);
   }
@@ -139,6 +140,12 @@ export class MouseEventHandler {
       this.previouslyHoveredElementKey = '';
     }
   }
+
+  // tslint:disable-next-line:member-ordering
+  throttledMouseMove = (
+    // tslint:disable-next-line:ban-types
+    throttle(this.onMouseMove, 50) as Function
+  ).bind(this);
 
   onMouseDown = (event: MouseEvent): void => {
     this.lastMouseDownCoordinates = getRelativeCursorCoordinates(event);
