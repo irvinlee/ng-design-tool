@@ -15,16 +15,18 @@ export class DesignState {
     }
   }
 
-  insertImage(): DesignState {
+  insertImage(zoomLevel?: number): DesignState {
     const newImage = new ImageElement();
     newImage.zIndex = this.elements.size + 1;
+    newImage.zoomLevel = zoomLevel || 1;
     this.elements.set(generateRandomId(), newImage);
     return this.clone();
   }
 
-  insertText(): DesignState{
+  insertText(zoomLevel?: number): DesignState{
     const newText = new TextElement();
     newText.zIndex = this.elements.size + 1;
+    newText.zoomLevel = zoomLevel || 1;
     this.elements.set(generateRandomId(), newText);
     return this.clone();
   }

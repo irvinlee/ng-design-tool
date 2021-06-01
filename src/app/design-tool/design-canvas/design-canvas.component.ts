@@ -40,7 +40,10 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       this.localDesignStateSubject.next(newDesignState);
     }));
 
-    this.subscriptions.push(this.designToolService.zoomLevel.subscribe(newZoomLevel => this.zoomLevel = newZoomLevel));
+    this.subscriptions.push(this.designToolService.zoomLevel.subscribe(newZoomLevel => {
+      this.zoomLevel = newZoomLevel;
+      this.renderDesign(this.getLocalDesignState());
+    }));
 
     this.subscriptions.push(this.localDesignState.subscribe((newDesignState) => {
       this.renderDesign(newDesignState);
@@ -97,7 +100,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   renderDesign(designState: DesignState): void {
     this.clearCanvas();
     designState.elements.forEach((designEl) => {
-      designEl?.render(this.canvasContext as CanvasRenderingContext2D, this.zoomLevel);
+      designEl?.render(this.canvasContext as CanvasRenderingContext2D);
       designEl?.setParentCanvas(this.canvasRef);
     });
   }

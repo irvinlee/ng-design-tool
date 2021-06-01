@@ -12,8 +12,8 @@ export class MouseHandle extends CanvasElement{
   type = '';
   id = '';
 
-  constructor(coordinates?: Coordinates, cursor?: string, type?: MouseHandleTypes, id?: string) {
-    super(coordinates, {width: 8, height: 8} as Dimensions);
+  constructor(coordinates?: Coordinates, cursor?: string, type?: MouseHandleTypes, id?: string, zoomLevel = 1) {
+    super(coordinates, {width: 8, height: 8} as Dimensions, false, 0, zoomLevel);
     this.cursor = cursor || 'default';
     this.type = type || MouseHandleTypes.RESIZE;
     this.id = id || '';

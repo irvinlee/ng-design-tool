@@ -18,6 +18,7 @@ export class ImageElement extends DesignElement{
       elementToClone.isSelected,
       elementToClone.zIndex,
       elementToClone.bearing,
+      elementToClone.zoomLevel,
       elementToClone.eventListeners
     );
 
@@ -38,11 +39,14 @@ export class ImageElement extends DesignElement{
       this.width = this.imageObj?.naturalWidth;
       this.height = this.imageObj?.naturalHeight;
       this.isImageLoaded = true;
+      console.log(this.imageObj?.naturalWidth);
+      console.log(this.width);
+      // console.log(this.height);
     });
     this.imageObj.src = this.src;
   }
 
-  render(canvasContext: CanvasRenderingContext2D, zoomLevel = 1): ImageElement {
+  render(canvasContext: CanvasRenderingContext2D): ImageElement {
     if (!this.src) {
       throw new Error('Invalid Image SRC');
     }
@@ -52,10 +56,9 @@ export class ImageElement extends DesignElement{
         this.loadImage();
       }
       // image not yet ready.. try again a bit later.
-      setTimeout(() => this.render(canvasContext, zoomLevel), 200);
+      setTimeout(() => this.render(canvasContext), 200);
       return this;
     }
-    canvasContext.scale(zoomLevel, zoomLevel);
     const left = this.left as number;
     const top = this.top as number;
     const width = this.width as number;

@@ -15,16 +15,18 @@ export abstract class CanvasElement {
 
   zIndex = 0;
   isHovered = false;
+  zoomLevel = 1;
 
-  constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false, zIndex = 0) {
+  constructor(coordinates?: Coordinates, dimensions?: Dimensions, isHovered = false, zIndex = 0, zoomLevel = 1) {
     this._coordinates = {top: coordinates?.top || DEFAULT_TOP, left: coordinates?.left || DEFAULT_LEFT};
     this._dimensions = {width: dimensions?.width, height: dimensions?.height};
     this.isHovered = isHovered;
     this.zIndex = zIndex;
+    this.zoomLevel = zoomLevel;
   }
 
   get height(): number | undefined {
-    return this._dimensions.height || 0;
+    return (this._dimensions.height || 0) * this.zoomLevel;
   }
 
   set height(newHeight: number | undefined) {
@@ -32,7 +34,9 @@ export abstract class CanvasElement {
   }
 
   get width(): number | undefined {
-    return this._dimensions.width || 0;
+    console.log(this._dimensions.width);
+    console.log(this.zoomLevel);
+    return (this._dimensions.width || 0) * this.zoomLevel;
   }
 
   set width(newWidth: number | undefined) {
@@ -40,7 +44,7 @@ export abstract class CanvasElement {
   }
 
   get top(): number | undefined{
-    return this._coordinates.top;
+    return (this._coordinates.top || 0) * this.zoomLevel;
   }
 
   set top(newTop: number | undefined) {
@@ -48,7 +52,7 @@ export abstract class CanvasElement {
   }
 
   get left(): number | undefined{
-    return this._coordinates.left;
+    return (this._coordinates.left || 0) * this.zoomLevel;
   }
 
   set left(newLeft: number | undefined) {

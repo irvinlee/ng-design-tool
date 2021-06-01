@@ -8,7 +8,7 @@ import { DesignState } from './common/classes/design-state';
 export class DesignToolService {
   private undoBufferLengthSubject = new BehaviorSubject<number>(0);
   private redoBufferLengthSubject = new BehaviorSubject<number>(0);
-  private zoomLevelSubject = new BehaviorSubject<number>(1);
+  private zoomLevelSubject = new BehaviorSubject<number>(1.5);
   private designStateSubject = new BehaviorSubject(new DesignState());
   private undoBuffer: Array<DesignState> = [];
   private redoBuffer: Array<DesignState> = [];
@@ -26,12 +26,12 @@ export class DesignToolService {
 
   insertImage(): void {
     const newDesignState = new DesignState(this.designStateSubject.getValue());
-    this.updateDesignState(newDesignState.insertImage());
+    this.updateDesignState(newDesignState.insertImage(this.zoomLevelSubject.getValue()));
   }
 
   insertText(): void {
     const newDesignState = new DesignState(this.designStateSubject.getValue());
-    this.updateDesignState(newDesignState.insertText());
+    this.updateDesignState(newDesignState.insertText(this.zoomLevelSubject.getValue()));
   }
 
   undo(): void {
@@ -56,7 +56,6 @@ export class DesignToolService {
     if (this.undoBuffer.length + 1 > this.MAX_BUFFER_LENGTH) {
       this.undoBuffer.shift();
     }
-    console.log(newDesignState);
     this.undoBuffer.push(this.designStateSubject.getValue().clone());
     this.designStateSubject.next(newDesignState);
     this.undoBufferLengthSubject.next(this.undoBuffer.length);

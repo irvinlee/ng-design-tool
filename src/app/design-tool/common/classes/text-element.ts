@@ -26,6 +26,7 @@ export class TextElement extends DesignElement{
       elementToClone.isSelected,
       elementToClone.zIndex,
       elementToClone.bearing,
+      elementToClone.zoomLevel,
       elementToClone.eventListeners
     );
     this.value = elementToClone.value;
@@ -36,8 +37,7 @@ export class TextElement extends DesignElement{
     return new TextElement(this);
   }
 
-  render(canvasContext: CanvasRenderingContext2D, zoomLevel: 1): TextElement {
-    canvasContext.scale(zoomLevel, zoomLevel);
+  render(canvasContext: CanvasRenderingContext2D): TextElement {
     canvasContext.textBaseline = 'bottom';
     canvasContext.fillStyle = this.format.color;
     canvasContext.font = `${this.format.size}px ${this.format.font}`;

@@ -22,10 +22,11 @@ export abstract class DesignElement extends CanvasElement{
     isSelected?: boolean,
     zIndex?: number,
     bearing?: number,
+    zoomLevel = 1,
     // tslint:disable-next-line:ban-types
     eventListeners?: Map<string, Function>
   ) {
-    super(coordinates, dimensions, isHovered, zIndex);
+    super(coordinates, dimensions, isHovered, zIndex, zoomLevel);
     this._isSelected = !!isSelected;
     this.zIndex = zIndex || 0;
     this.bearing = bearing || 0;
@@ -161,7 +162,7 @@ export abstract class DesignElement extends CanvasElement{
   }
 
   abstract clone(): DesignElement;
-  abstract render(canvasRef: CanvasRenderingContext2D, zoomLevel: number): DesignElement;
+  abstract render(canvasRef: CanvasRenderingContext2D): DesignElement;
   abstract resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void;
   abstract rotate(baseElement: DesignElement, mouseX: number, mouseY: number): void;
 }
