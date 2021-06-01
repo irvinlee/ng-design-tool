@@ -32,7 +32,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
   canvasRef?: HTMLCanvasElement;
   canvasContext?: CanvasRenderingContext2D;
-  zoomLevel = 2;
+  zoomLevel = 1;
 
   constructor(private designToolService: DesignToolService) {
     this.subscriptions.push(this.designToolService.designState.subscribe((newDesignState) => {
@@ -42,7 +42,10 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
     this.subscriptions.push(this.designToolService.zoomLevel.subscribe(newZoomLevel => {
       this.zoomLevel = newZoomLevel;
-      this.renderDesign(this.getLocalDesignState());
+      // add a small timeout before redrawing the canvas contents to make sure that the canvas has already been resized before redrawing...
+      setTimeout(() => {
+        this.renderDesign(this.getLocalDesignState());
+      }, 10);
     }));
 
     this.subscriptions.push(this.localDesignState.subscribe((newDesignState) => {

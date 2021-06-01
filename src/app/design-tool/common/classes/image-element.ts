@@ -141,6 +141,7 @@ export class ImageElement extends DesignElement{
     }
   }
 
+  // baseElement - the version of this element before the rotation. we will base the computations on the original position
   rotate(baseElement: DesignElement, mouseX: number, mouseY: number): void {
     this.resizeHandles.rotateHandle.top = mouseY - 4;
     this.resizeHandles.rotateHandle.left = mouseX - 4;
