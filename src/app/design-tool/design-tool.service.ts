@@ -8,7 +8,7 @@ import { DesignState } from './common/classes/design-state';
 export class DesignToolService {
   private undoBufferLengthSubject = new BehaviorSubject<number>(0);
   private redoBufferLengthSubject = new BehaviorSubject<number>(0);
-  private zoomLevelSubject = new BehaviorSubject<number>(1.5);
+  private zoomLevelSubject = new BehaviorSubject<number>(1);
   private designStateSubject = new BehaviorSubject(new DesignState());
   private undoBuffer: Array<DesignState> = [];
   private redoBuffer: Array<DesignState> = [];
@@ -26,12 +26,12 @@ export class DesignToolService {
 
   insertImage(): void {
     const newDesignState = new DesignState(this.designStateSubject.getValue());
-    this.updateDesignState(newDesignState.insertImage(this.zoomLevelSubject.getValue()));
+    this.updateDesignState(newDesignState.insertImage());
   }
 
   insertText(): void {
     const newDesignState = new DesignState(this.designStateSubject.getValue());
-    this.updateDesignState(newDesignState.insertText(this.zoomLevelSubject.getValue()));
+    this.updateDesignState(newDesignState.insertText());
   }
 
   undo(): void {
@@ -57,13 +57,18 @@ export class DesignToolService {
       this.undoBuffer.shift();
     }
     this.undoBuffer.push(this.designStateSubject.getValue().clone());
-    this.designStateSubject.next(newDesignState);
+    this.designStateSubject.next(newDesignState.setElementZoomLevel(this.getCurrentZoomLevel()));
     this.undoBufferLengthSubject.next(this.undoBuffer.length);
     this.redoBuffer = [];
     this.redoBufferLengthSubject.next(0);
   }
 
+  getCurrentZoomLevel(): number {
+    return this.zoomLevelSubject.getValue();
+  }
+
   setZoomLevel(zoomLevel: number): void {
     this.zoomLevelSubject.next(zoomLevel);
+    this.updateDesignState(this.designStateSubject.getValue());
   }
 }

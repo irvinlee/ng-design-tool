@@ -31,6 +31,14 @@ export class DesignState {
     return this.clone();
   }
 
+  setElementZoomLevel(zoomLevel = 1): DesignState {
+    for (const [key, value] of this.elements.entries()) {
+      (value as DesignElement).zoomLevel = zoomLevel;
+    }
+
+    return this.clone();
+  }
+
   clone(): DesignState {
     return new DesignState(this);
   }

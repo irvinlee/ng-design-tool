@@ -94,7 +94,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   clearCanvas(): void {
-    this.canvasContext?.clearRect(0, 0, this.width, this.height);
+    this.canvasContext?.clearRect(0, 0, this.width * this.zoomLevel, this.height * this.zoomLevel);
   }
 
   renderDesign(designState: DesignState): void {

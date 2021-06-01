@@ -39,9 +39,6 @@ export class ImageElement extends DesignElement{
       this.width = this.imageObj?.naturalWidth;
       this.height = this.imageObj?.naturalHeight;
       this.isImageLoaded = true;
-      console.log(this.imageObj?.naturalWidth);
-      console.log(this.width);
-      // console.log(this.height);
     });
     this.imageObj.src = this.src;
   }
@@ -50,7 +47,6 @@ export class ImageElement extends DesignElement{
     if (!this.src) {
       throw new Error('Invalid Image SRC');
     }
-
     if (!this.isImageLoaded) {
       if (!this.isLoadingImage) {
         this.loadImage();

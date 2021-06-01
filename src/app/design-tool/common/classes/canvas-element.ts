@@ -34,8 +34,6 @@ export abstract class CanvasElement {
   }
 
   get width(): number | undefined {
-    console.log(this._dimensions.width);
-    console.log(this.zoomLevel);
     return (this._dimensions.width || 0) * this.zoomLevel;
   }
 
