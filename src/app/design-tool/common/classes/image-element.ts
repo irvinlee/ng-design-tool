@@ -10,6 +10,11 @@ export class ImageElement extends DesignElement{
   isImageLoaded = false;
   isLoadingImage = false;
 
+  cropLeft?: number;
+  cropTop?: number;
+  cropWidth?: number;
+  cropHeight?: number;
+
   constructor(elementToClone = {} as ImageElement) {
     super(
       elementToClone.coordinates,
@@ -26,6 +31,10 @@ export class ImageElement extends DesignElement{
     this.imageObj = elementToClone.imageObj;
     this.isImageLoaded = elementToClone.isImageLoaded;
     this.isLoadingImage = elementToClone.isLoadingImage;
+    this.cropLeft = elementToClone.cropLeft || 0;
+    this.cropTop = elementToClone.cropTop || 0;
+    this.cropWidth = elementToClone.cropWidth;
+    this.cropHeight = elementToClone.cropHeight;
   }
 
   clone(): ImageElement {
@@ -70,10 +79,14 @@ export class ImageElement extends DesignElement{
 
     canvasContext.drawImage(
       this.imageObj as HTMLImageElement,
+      this.cropLeft as number,
+      this.cropTop as number,
+      this.cropWidth || width,
+      this.cropHeight || height,
        -width / 2,
       -height / 2,
-      this.width as number,
-      this.height as number
+      this.cropWidth || width,
+      this.cropHeight || height,
     );
 
     if (this.isHovered || this.isSelected) {
