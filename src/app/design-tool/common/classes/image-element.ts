@@ -23,6 +23,8 @@ export class ImageElement extends DesignElement{
 
     this.src = elementToClone.src || defaultImage;
     this.imageObj = elementToClone.imageObj;
+    this.isImageLoaded = elementToClone.isImageLoaded;
+    this.isLoadingImage = elementToClone.isLoadingImage;
   }
 
   clone(): ImageElement {

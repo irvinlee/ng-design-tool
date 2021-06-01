@@ -156,8 +156,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     // instantiate a brand new object to clear all previous references..
     (this.mouseEventHandler as MouseEventHandler).unbindCanvasMouseEvents();
     this.mouseEventHandler = new MouseEventHandler(this.canvasRef as HTMLCanvasElement);
-    console.log(this.getLocalDesignState());
-    this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));
+    this.designToolService.updateDesignState(this.getLocalDesignState().clone());
   }
 
   private onElementRotate(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {

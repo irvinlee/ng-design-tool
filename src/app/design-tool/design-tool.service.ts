@@ -54,6 +54,7 @@ export class DesignToolService {
     if (this.undoBuffer.length + 1 > this.MAX_BUFFER_LENGTH) {
       this.undoBuffer.shift();
     }
+    console.log(newDesignState);
     this.undoBuffer.push(this.designStateSubject.getValue().clone());
     this.designStateSubject.next(newDesignState);
     this.undoBufferLengthSubject.next(this.undoBuffer.length);
