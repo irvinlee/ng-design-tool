@@ -42,7 +42,7 @@ export class ImageElement extends DesignElement{
     this.imageObj.src = this.src;
   }
 
-  render(canvasContext: CanvasRenderingContext2D): ImageElement {
+  render(canvasContext: CanvasRenderingContext2D, zoomLevel = 1): ImageElement {
     if (!this.src) {
       throw new Error('Invalid Image SRC');
     }
@@ -52,10 +52,10 @@ export class ImageElement extends DesignElement{
         this.loadImage();
       }
       // image not yet ready.. try again a bit later.
-      setTimeout(() => this.render(canvasContext), 200);
+      setTimeout(() => this.render(canvasContext, zoomLevel), 200);
       return this;
     }
-
+    canvasContext.scale(zoomLevel, zoomLevel);
     const left = this.left as number;
     const top = this.top as number;
     const width = this.width as number;

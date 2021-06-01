@@ -32,12 +32,15 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
   canvasRef?: HTMLCanvasElement;
   canvasContext?: CanvasRenderingContext2D;
+  zoomLevel = 2;
 
   constructor(private designToolService: DesignToolService) {
-    this.designToolService.designState.subscribe((newDesignState) => {
+    this.subscriptions.push(this.designToolService.designState.subscribe((newDesignState) => {
       // when the global design state changes, update the local copy...
       this.localDesignStateSubject.next(newDesignState);
-    });
+    }));
+
+    this.subscriptions.push(this.designToolService.zoomLevel.subscribe(newZoomLevel => this.zoomLevel = newZoomLevel));
 
     this.subscriptions.push(this.localDesignState.subscribe((newDesignState) => {
       this.renderDesign(newDesignState);
@@ -94,7 +97,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   renderDesign(designState: DesignState): void {
     this.clearCanvas();
     designState.elements.forEach((designEl) => {
-      designEl?.render(this.canvasContext as CanvasRenderingContext2D);
+      designEl?.render(this.canvasContext as CanvasRenderingContext2D, this.zoomLevel);
       designEl?.setParentCanvas(this.canvasRef);
     });
   }
@@ -109,6 +112,14 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   ngOnDestroy(): void {
     this.mouseEventHandler?.unbindCanvasMouseEvents();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  get canvasWidth(): number {
+    return this.width * this.zoomLevel;
+  }
+
+  get canvasHeight(): number {
+    return this.height * this.zoomLevel;
   }
 
   private getLocalDesignState(): DesignState {

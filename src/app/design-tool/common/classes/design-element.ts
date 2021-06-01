@@ -161,7 +161,7 @@ export abstract class DesignElement extends CanvasElement{
   }
 
   abstract clone(): DesignElement;
-  abstract render(canvasRef: CanvasRenderingContext2D): DesignElement;
+  abstract render(canvasRef: CanvasRenderingContext2D, zoomLevel: number): DesignElement;
   abstract resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void;
   abstract rotate(baseElement: DesignElement, mouseX: number, mouseY: number): void;
 }

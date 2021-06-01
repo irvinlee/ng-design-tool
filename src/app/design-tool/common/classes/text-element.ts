@@ -36,7 +36,8 @@ export class TextElement extends DesignElement{
     return new TextElement(this);
   }
 
-  render(canvasContext: CanvasRenderingContext2D): TextElement {
+  render(canvasContext: CanvasRenderingContext2D, zoomLevel: 1): TextElement {
+    canvasContext.scale(zoomLevel, zoomLevel);
     canvasContext.textBaseline = 'bottom';
     canvasContext.fillStyle = this.format.color;
     canvasContext.font = `${this.format.size}px ${this.format.font}`;

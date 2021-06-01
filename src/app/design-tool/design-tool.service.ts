@@ -8,6 +8,7 @@ import { DesignState } from './common/classes/design-state';
 export class DesignToolService {
   private undoBufferLengthSubject = new BehaviorSubject<number>(0);
   private redoBufferLengthSubject = new BehaviorSubject<number>(0);
+  private zoomLevelSubject = new BehaviorSubject<number>(1);
   private designStateSubject = new BehaviorSubject(new DesignState());
   private undoBuffer: Array<DesignState> = [];
   private redoBuffer: Array<DesignState> = [];
@@ -16,6 +17,7 @@ export class DesignToolService {
   undoBufferLength = this.undoBufferLengthSubject.asObservable();
   redoBufferLength = this.redoBufferLengthSubject.asObservable();
   designState = this.designStateSubject.asObservable();
+  zoomLevel = this.zoomLevelSubject.asObservable();
 
   private emitBufferLengthUpdates(): void {
     this.undoBufferLengthSubject.next(this.undoBuffer.length);
@@ -60,5 +62,9 @@ export class DesignToolService {
     this.undoBufferLengthSubject.next(this.undoBuffer.length);
     this.redoBuffer = [];
     this.redoBufferLengthSubject.next(0);
+  }
+
+  setZoomLevel(zoomLevel: number): void {
+    this.zoomLevelSubject.next(zoomLevel);
   }
 }

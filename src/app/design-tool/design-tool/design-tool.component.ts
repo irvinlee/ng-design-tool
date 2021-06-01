@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./design-tool.component.scss']
 })
 export class DesignToolComponent implements OnInit {
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
   }
