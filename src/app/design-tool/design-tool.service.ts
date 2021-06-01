@@ -52,15 +52,19 @@ export class DesignToolService {
     }
   }
 
-  updateDesignState(newDesignState: DesignState): void {
-    if (this.undoBuffer.length + 1 > this.MAX_BUFFER_LENGTH) {
-      this.undoBuffer.shift();
+  updateDesignState(newDesignState: DesignState, isOnlyChangingZoomLevel = false): void {
+    if (isOnlyChangingZoomLevel) {
+      this.designStateSubject.next(newDesignState.setElementZoomLevel(this.getCurrentZoomLevel()));
+    } else {
+      if (this.undoBuffer.length + 1 > this.MAX_BUFFER_LENGTH) {
+        this.undoBuffer.shift();
+      }
+      this.undoBuffer.push(this.designStateSubject.getValue().clone());
+      this.designStateSubject.next(newDesignState.setElementZoomLevel(this.getCurrentZoomLevel()));
+      this.undoBufferLengthSubject.next(this.undoBuffer.length);
+      this.redoBuffer = [];
+      this.redoBufferLengthSubject.next(0);
     }
-    this.undoBuffer.push(this.designStateSubject.getValue().clone());
-    this.designStateSubject.next(newDesignState.setElementZoomLevel(this.getCurrentZoomLevel()));
-    this.undoBufferLengthSubject.next(this.undoBuffer.length);
-    this.redoBuffer = [];
-    this.redoBufferLengthSubject.next(0);
   }
 
   getCurrentZoomLevel(): number {
@@ -69,6 +73,6 @@ export class DesignToolService {
 
   setZoomLevel(zoomLevel: number): void {
     this.zoomLevelSubject.next(zoomLevel);
-    this.updateDesignState(this.designStateSubject.getValue());
+    this.updateDesignState(this.designStateSubject.getValue(), true);
   }
 }
