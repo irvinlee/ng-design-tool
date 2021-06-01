@@ -1,13 +1,15 @@
+import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
+import { MouseHandleTypes } from './../../types/mouse-handle-types.enum';
 import { getCoordinatesAfterRotation, getRotationHandlePosition } from '../utils';
 import { CanvasElement } from './canvas-element';
 import { MouseHandle } from './mouse-handle';
 
 export class ResizeHandles {
-  topLeftHandle = new MouseHandle(undefined, 'nwse-resize');
-  topRightHandle = new MouseHandle(undefined, 'nesw-resize');
-  bottomLeftHandle = new MouseHandle(undefined, 'nesw-resize');
-  bottomRightHandle = new MouseHandle(undefined, 'nwse-resize');
-  rotateHandle = new MouseHandle(undefined, 'grab');
+  topLeftHandle = new MouseHandle(undefined, 'nwse-resize', MouseHandleTypes.RESIZE, ElementMouseHandles.TOP_LEFT);
+  topRightHandle = new MouseHandle(undefined, 'nesw-resize', MouseHandleTypes.RESIZE, ElementMouseHandles.TOP_RIGHT);
+  bottomLeftHandle = new MouseHandle(undefined, 'nesw-resize', MouseHandleTypes.RESIZE, ElementMouseHandles.BOTTOM_LEFT);
+  bottomRightHandle = new MouseHandle(undefined, 'nwse-resize', MouseHandleTypes.RESIZE, ElementMouseHandles.BOTTOM_RIGHT);
+  rotateHandle = new MouseHandle(undefined, 'grab', MouseHandleTypes.ROTATE, ElementMouseHandles.ROTATE);
 
   setPosition(x: number, y: number, width: number, height: number, bearing: number): void{
     const midPointX = (x + width / 2);

@@ -1,3 +1,4 @@
+import { MouseHandle } from './../common/classes/mouse-handle';
 import { CanvasMouseEvent } from './../types/canvas-mouse-event';
 import { MouseEventHandler } from './../common/classes/mouse-event-handler';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
@@ -21,11 +22,10 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   private localDesignStateSubject = new BehaviorSubject(new DesignState());
   private mouseEventSubject: BehaviorSubject<{event: MouseEvent, type: string}|undefined> =
     new BehaviorSubject<{event: MouseEvent, type: string}|undefined>(undefined);
-  private selectedElement: DesignElement | undefined;
-  private isRotatingElement = false;
-  private selectedElementClone: DesignElement | undefined;
+
   private mouseEventHandler?: MouseEventHandler;
   private subscriptions: Array<Subscription> = [];
+  private selectedElement?: DesignElement;
 
   localDesignState = this.localDesignStateSubject.asObservable();
   mouseEventObservable = this.mouseEventSubject.asObservable();
@@ -44,17 +44,23 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       this.bindDesignElementMouseEvents(newDesignState);
 
       if (this.mouseEventHandler) {
-        this.mouseEventHandler.setElements(newDesignState.elements as Map<string, CanvasElement>);
+        this.mouseEventHandler.setElements(newDesignState.elements as Map<string, DesignElement>);
         this.subscriptions.push(this.mouseEventHandler.mouseEventObservable.subscribe(
           (canvasMouseEvent: CanvasMouseEvent) => {
             const { targetKey, mouseEvent, type } = canvasMouseEvent;
-            console.log(canvasMouseEvent);
+
+            if (canvasMouseEvent.type === 'click') {
+              this.clearElementSelection();
+            }
 
             if (targetKey) {
               const affectedElement = this.getLocalDesignState().elements.get(targetKey as string);
+
+              if (canvasMouseEvent.type === 'click') {
+                this.selectedElement = affectedElement?.clone();
+              }
+
               affectedElement?.handleMouseEvent(canvasMouseEvent);
-            } else if (!targetKey && canvasMouseEvent.type === 'click') { // user clicked on the canvas without hitting any elements
-              this.clearElementSelection();
             }
           }
         ));
@@ -63,7 +69,6 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   clearElementSelection(): void {
-    this.selectedElement = undefined;
     this.getLocalDesignState().elements.forEach((designEl) => {
       (designEl as DesignElement).isSelected = false;
     });
@@ -78,7 +83,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       designEl?.addEventListener('drag', this.onElementDrag.bind(this));
       designEl?.addEventListener('drop', this.onElementDrop.bind(this));
       designEl?.addEventListener('resize', this.onElementResize.bind(this));
-      designEl?.addEventListener('startRotate', this.onElementRotateStart.bind(this));
+      designEl?.addEventListener('rotate', this.onElementRotate.bind(this));
     });
   }
 
@@ -98,7 +103,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     this.canvasRef = document.getElementById(this.id) as HTMLCanvasElement;
     this.canvasContext = this.canvasRef.getContext('2d') as CanvasRenderingContext2D;
     this.mouseEventHandler = new MouseEventHandler(this.canvasRef);
-    this.mouseEventHandler.setElements(this.localDesignStateSubject.getValue().elements as Map<string, CanvasElement>);
+    this.mouseEventHandler.setElements(this.localDesignStateSubject.getValue().elements as Map<string, DesignElement>);
   }
 
   ngOnDestroy(): void {
@@ -110,82 +115,53 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
     return this.localDesignStateSubject.getValue();
   }
 
-  private onElementRotateStart(): void {
-    console.log('ROTATE START!');
-    this.isRotatingElement = true;
-    this.selectedElementClone = this.selectedElement?.clone();
-  }
-
-  private onElementRotateEnd(): void {
-    console.log('ROTATE END!');
-    this.isRotatingElement = false;
-    this.selectedElementClone = undefined;
-
-    // commit element update to the master copy of the Design State
-    // instantiate a brand new object to clear all previous references..
-    this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));
-  }
-
-  private rotateElement(mouseX: number, mouseY: number): void {
-    const baseElement = this.selectedElementClone as DesignElement;
-    const element = this.selectedElement as DesignElement;
-    element.resizeHandles.rotateHandle.top = mouseY - 4;
-    element.resizeHandles.rotateHandle.left = mouseX - 4;
-
-    const rotatedPosition = getCoordinatesAfterRotation(
-      baseElement.left as number,
-      baseElement.top as number,
-      baseElement.bearing,
-      baseElement.midpointX,
-      baseElement.midpointY
-    );
-
-    element.bearing = getBearing(
-      rotatedPosition.x as number,
-      rotatedPosition.y as number,
-      mouseX,
-      mouseY
-    );
-
-    this.renderDesign(this.getLocalDesignState());
-  }
-
-  private onElementResize(element: DesignElement, mouseHandleUsed: string, mouseX: number, mouseY: number): void {
-    element.resize(mouseHandleUsed, mouseX, mouseY);
+  private onElementResize(
+    element: DesignElement,
+    canvasMouseEvent: CanvasMouseEvent,
+    {cursorX, cursorY}: {cursorX: number, cursorY: number}
+  ): void {
+    const mouseHandleUsed = canvasMouseEvent.transformHandle as MouseHandle;
+    element.resize(mouseHandleUsed.id, cursorX, cursorY);
     this.renderDesign(this.getLocalDesignState());
   }
 
   private onHoverElement(element: DesignElement): void {
     (this.canvasRef as HTMLCanvasElement).style.cursor = 'pointer';
+    element.isHovered = true;
     this.renderDesign(this.getLocalDesignState());
   }
 
-  private onElementMouseOut(): void {
+  private onElementMouseOut(element: DesignElement): void {
     (this.canvasRef as HTMLCanvasElement).style.cursor = 'default';
+    element.isHovered = false;
     this.renderDesign(this.getLocalDesignState());
   }
 
   private onElementClick(element: DesignElement): void {
-    this.getLocalDesignState().elements.forEach((designEl: DesignElement | undefined) => {
-      if (designEl === element) {
-        designEl.isSelected = true;
-        this.selectedElement = designEl;
-      } else {
-        (designEl as DesignElement).isSelected = false;
-      }
-    });
+    element.isSelected = true;
     this.renderDesign(this.getLocalDesignState());
   }
 
   private onElementDrag(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
+    // console.log(element);
+    // console.log(cursorX);
+    // console.log(cursorY);
     element.top = cursorY - ((element.height as number) / 2);
     element.left = cursorX - ((element.width as number) / 2);
     this.renderDesign(this.getLocalDesignState());
   }
 
-  private onElementDrop(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
+  private onElementDrop(element: DesignElement): void {
     // commit element update to the master copy of the Design State
     // instantiate a brand new object to clear all previous references..
+    (this.mouseEventHandler as MouseEventHandler).unbindCanvasMouseEvents();
+    this.mouseEventHandler = new MouseEventHandler(this.canvasRef as HTMLCanvasElement);
+    console.log(this.getLocalDesignState());
     this.designToolService.updateDesignState(new DesignState(this.getLocalDesignState()));
+  }
+
+  private onElementRotate(element: DesignElement, {cursorX, cursorY}: {cursorX: number, cursorY: number}): void {
+    element.rotate((this.selectedElement as DesignElement), cursorX, cursorY);
+    this.renderDesign(this.getLocalDesignState());
   }
 }

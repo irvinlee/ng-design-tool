@@ -90,16 +90,19 @@ export abstract class CanvasElement {
     const {type} = canvasMouseEvent;
 
     switch (type) {
+      case 'click':
+        this.onClick(canvasMouseEvent);
+        break;
       case 'mousemove':
         this.onMouseMove(canvasMouseEvent);
         break;
-      case 'mouseup':
-        this.onMouseUp(canvasMouseEvent);
-        break;
-      case 'mousedown':
-        this.onMouseDown(canvasMouseEvent);
-        break;
       case 'drag':
+        this.onDrag(canvasMouseEvent);
+        break;
+      case 'resize':
+        this.onDrag(canvasMouseEvent);
+        break;
+      case 'rotate':
         this.onDrag(canvasMouseEvent);
         break;
       case 'drop':
@@ -114,8 +117,6 @@ export abstract class CanvasElement {
   abstract onClick(canvasMouseEvent: CanvasMouseEvent): void;
   abstract onMouseMove(canvasMouseEvent: CanvasMouseEvent): void;
   abstract onMouseOut(canvasMouseEvent: CanvasMouseEvent): void;
-  abstract onMouseUp(canvasMouseEvent: CanvasMouseEvent): void;
-  abstract onMouseDown(canvasMouseEvent: CanvasMouseEvent): void;
   abstract onDrag(canvasMouseEvent: CanvasMouseEvent): void;
   abstract onDrop(canvasMouseEvent: CanvasMouseEvent): void;
 }

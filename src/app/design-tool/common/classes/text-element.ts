@@ -59,4 +59,5 @@ export class TextElement extends DesignElement{
   }
 
   resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void {}
+  rotate(baseElement: DesignElement, mouseX: number, mouseY: number): void {}
 }

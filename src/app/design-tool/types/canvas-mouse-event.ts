@@ -1,3 +1,4 @@
+import { MouseHandle } from './../common/classes/mouse-handle';
 import { CanvasElement } from '../common/classes/canvas-element';
 
 export interface CanvasMouseEvent {
@@ -5,4 +6,5 @@ export interface CanvasMouseEvent {
   targetKey?: string;
   mouseEvent: MouseEvent;
   type: string;
+  transformHandle?: MouseHandle;
 }

@@ -1,3 +1,4 @@
+import { MouseHandleTypes } from './../../types/mouse-handle-types.enum';
 import { CanvasMouseEvent } from './../../types/canvas-mouse-event';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
@@ -7,11 +8,15 @@ import { getRelativeCursorCoordinates } from '../utils';
 export class MouseHandle extends CanvasElement{
   // tslint:disable-next-line:ban-types
   eventListeners: Map<string, Function> = new Map();
-  cursor = 'default';
+  cursor = '';
+  type = '';
+  id = '';
 
-  constructor(coordinates?: Coordinates, cursor?: string) {
-    super(coordinates, {width: 12, height: 12} as Dimensions);
+  constructor(coordinates?: Coordinates, cursor?: string, type?: MouseHandleTypes, id?: string) {
+    super(coordinates, {width: 8, height: 8} as Dimensions);
     this.cursor = cursor || 'default';
+    this.type = type || MouseHandleTypes.RESIZE;
+    this.id = id || '';
   }
 
   render(canvasContext: CanvasRenderingContext2D): void {
@@ -75,7 +80,7 @@ export class MouseHandle extends CanvasElement{
     if (this.eventListeners.has('drag')) {
       // tslint:disable-next-line:ban-types
       const dragCB = this.eventListeners.get('drag') as Function;
-      dragCB(x, y);
+      dragCB(this, {cursorX: x, cursorY: y});
     }
   }
 

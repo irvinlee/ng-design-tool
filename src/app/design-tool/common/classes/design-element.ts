@@ -1,8 +1,10 @@
+import { MouseHandle } from './mouse-handle';
 import { CanvasMouseEvent } from './../../types/canvas-mouse-event';
 import { ResizeHandles } from './resize-handles';
 import { Dimensions } from './../../types/dimensions';
 import { Coordinates } from './../../types/coordinates';
 import { CanvasElement } from './canvas-element';
+import { getRelativeCursorCoordinates } from '../utils';
 
 export abstract class DesignElement extends CanvasElement{
   // tslint:disable-next-line:variable-name
@@ -79,32 +81,78 @@ export abstract class DesignElement extends CanvasElement{
     this.resizeHandles.render(canvasContext);
   }
 
+  getHoveredResizeHandle(mouseX: number, mouseY: number): MouseHandle|undefined {
+    for (const handle of this.resizeHandles.elements) {
+      if (handle.checkIsHovered(mouseX, mouseY)) {
+        return handle as MouseHandle;
+      }
+    }
+
+    return;
+  }
+
   onClick(canvasMouseEvent: CanvasMouseEvent): void {
-    console.log(canvasMouseEvent);
+    if (this.eventListeners.has('click')) {
+      // tslint:disable-next-line:ban-types
+      const clickCB = this.eventListeners.get('click') as Function;
+      clickCB(this);
+    }
   }
 
   onMouseMove(canvasMouseEvent: CanvasMouseEvent): void {
-    console.log(canvasMouseEvent);
+    if (this.eventListeners.has('click')) {
+      // tslint:disable-next-line:ban-types
+      const mouseMoveCB = this.eventListeners.get('mousemove') as Function;
+      mouseMoveCB(this);
+    }
   }
 
   onMouseOut(canvasMouseEvent: CanvasMouseEvent): void {
-    console.log(canvasMouseEvent);
-  }
-
-  onMouseUp(canvasMouseEvent: CanvasMouseEvent): void {
-    console.log(canvasMouseEvent);
-  }
-
-  onMouseDown(canvasMouseEvent: CanvasMouseEvent): void {
-   console.log(canvasMouseEvent);
+    // tslint:disable-next-line:ban-types
+    const mouseOutCB = this.eventListeners.get('mouseout') as Function;
+    mouseOutCB(this);
   }
 
   onDrag(canvasMouseEvent: CanvasMouseEvent): void {
-    console.log(canvasMouseEvent);
+    if (canvasMouseEvent.type === 'resize') {
+      this.onResize(canvasMouseEvent);
+    } else if (canvasMouseEvent.type === 'rotate') {
+      this.onRotate(canvasMouseEvent);
+    }else {
+      const {mouseEvent} = canvasMouseEvent;
+      const {x, y} = getRelativeCursorCoordinates(mouseEvent);
+
+      if (this.eventListeners.has('drag')) {
+        // tslint:disable-next-line:ban-types
+        const dragCB = this.eventListeners.get('drag') as Function;
+        dragCB(this, {cursorX: x, cursorY: y});
+      }
+    }
   }
 
   onDrop(canvasMouseEvent: CanvasMouseEvent): void {
-    console.log(canvasMouseEvent);
+    console.log('drop!');
+    // tslint:disable-next-line:ban-types
+    const dropCB = this.eventListeners.get('drop') as Function;
+    dropCB(this, canvasMouseEvent);
+  }
+
+  onResize(canvasMouseEvent: CanvasMouseEvent): void {
+    if (this.eventListeners.has('resize')) {
+      const {x, y} = getRelativeCursorCoordinates(canvasMouseEvent.mouseEvent);
+      // tslint:disable-next-line:ban-types
+      const resizeCB = this.eventListeners.get('resize') as Function;
+      resizeCB(this, canvasMouseEvent, {cursorX: x, cursorY: y});
+    }
+  }
+
+  onRotate(canvasMouseEvent: CanvasMouseEvent): void {
+    if (this.eventListeners.has('rotate')) {
+      const {x, y} = getRelativeCursorCoordinates(canvasMouseEvent.mouseEvent);
+      // tslint:disable-next-line:ban-types
+      const rotateCB = this.eventListeners.get('rotate') as Function;
+      rotateCB(this, {cursorX: x, cursorY: y});
+    }
   }
 
   // tslint:disable-next-line:ban-types
@@ -115,4 +163,5 @@ export abstract class DesignElement extends CanvasElement{
   abstract clone(): DesignElement;
   abstract render(canvasRef: CanvasRenderingContext2D): DesignElement;
   abstract resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void;
+  abstract rotate(baseElement: DesignElement, mouseX: number, mouseY: number): void;
 }

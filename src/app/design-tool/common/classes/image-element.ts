@@ -1,4 +1,4 @@
-import { degToRad } from '../utils';
+import { degToRad, getBearing, getCoordinatesAfterRotation } from '../utils';
 import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
 import { DesignElement } from './design-element';
 
@@ -118,7 +118,7 @@ export class ImageElement extends DesignElement{
     const width = (this.width as number);
     const height = (this.height as number);
 
-    this.coordinates.left = mouseX;
+    this.left = mouseX;
     this.width = width + (oldXCoord - (this.left as number));
     this.height = height - ((this.top as number) + height - mouseY);
   }
@@ -138,5 +138,25 @@ export class ImageElement extends DesignElement{
       case ElementMouseHandles.BOTTOM_LEFT: this.resizeSW(mouseX, mouseY); break;
       case ElementMouseHandles.BOTTOM_RIGHT: this.resizeSE(mouseX, mouseY); break;
     }
+  }
+
+  rotate(baseElement: DesignElement, mouseX: number, mouseY: number): void {
+    this.resizeHandles.rotateHandle.top = mouseY - 4;
+    this.resizeHandles.rotateHandle.left = mouseX - 4;
+
+    const rotatedPosition = getCoordinatesAfterRotation(
+      baseElement.left as number,
+      baseElement.top as number,
+      baseElement.bearing,
+      baseElement.midpointX,
+      baseElement.midpointY
+    );
+
+    this.bearing = getBearing(
+      rotatedPosition.x as number,
+      rotatedPosition.y as number,
+      mouseX,
+      mouseY
+    );
   }
 }
