@@ -1,3 +1,4 @@
+import { CropParams } from './../types/crop-params';
 import { MouseHandle } from './../common/classes/mouse-handle';
 import { CanvasMouseEvent } from './../types/canvas-mouse-event';
 import { MouseEventHandler } from './../common/classes/mouse-event-handler';
@@ -55,6 +56,14 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
     this.subscriptions.push(this.designToolService.isCropping.subscribe(isCropping => {
       this.isCropping = isCropping;
+      if (isCropping) {
+        (this.selectedElement as DesignElement).isSelected = false;
+        this.renderDesign(this.getLocalDesignState());
+        console.log(this.selectedElement);
+      } else if (this.selectedElement) {
+        (this.selectedElement as DesignElement).isSelected = true;
+        this.renderDesign(this.getLocalDesignState());
+      }
     }));
 
     this.subscriptions.push(this.localDesignState.subscribe((newDesignState) => {
@@ -68,19 +77,11 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
             const { targetKey, mouseEvent, type } = canvasMouseEvent;
 
             if (canvasMouseEvent.type === 'click') {
-              this.designToolService.setSelectedElementKey('');
-              this.clearElementSelection();
+              this.selectElementByKey(targetKey);
             }
 
             if (targetKey) {
               const affectedElement = this.getLocalDesignState().elements.get(targetKey as string);
-
-              if (canvasMouseEvent.type === 'click') {
-                // TODO: refactor this so that it only uses the copy from the service...
-                this.selectedElement = affectedElement?.clone();
-                this.designToolService.setSelectedElementKey(targetKey);
-              }
-
               affectedElement?.handleMouseEvent(canvasMouseEvent);
             }
           }
@@ -90,6 +91,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   }
 
   clearElementSelection(): void {
+    this.designToolService.setSelectedElementKey('');
     this.getLocalDesignState().elements.forEach((designEl) => {
       (designEl as DesignElement).isSelected = false;
     });
@@ -138,6 +140,28 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
 
   get canvasHeight(): number {
     return this.height * this.zoomLevel;
+  }
+
+  private selectElementByKey(key = ''): void {
+    this.clearElementSelection();
+    this.selectedElement = this.getLocalDesignState().elements.get(key);
+    this.designToolService.setSelectedElementKey(key);
+
+    if (this.selectedElement) {
+      this.setCropParameters({
+        left: this.selectedElement.left as number,
+        top: this.selectedElement.top as number,
+        width: this.selectedElement.width as number,
+        height: this.selectedElement.height as number,
+      });
+    }
+  }
+
+  private setCropParameters(cropParams: CropParams): void {
+    this.cropLeft = cropParams.left;
+    this.cropTop = cropParams.top;
+    this.cropWidth = cropParams.width;
+    this.cropHeight = cropParams.height;
   }
 
   private getLocalDesignState(): DesignState {
