@@ -24,12 +24,14 @@
         top: -8px;
         border-top: black 2px solid;
         border-left: black 2px solid;
+        cursor: nwse-resize;
       }
       .top-right-handle {
         right: -8px;
         top: -8px;
         border-top: black 2px solid;
         border-right: black 2px solid;
+        cursor: nesw-resize;
       }
 
       .bottom-left-handle {
@@ -37,6 +39,7 @@
         bottom: -8px;
         border-bottom: black 2px solid;
         border-left: black 2px solid;
+        cursor: nesw-resize;
       }
 
       .bottom-right-handle {
@@ -44,6 +47,7 @@
         bottom: -8px;
         border-bottom: black 2px solid;
         border-right: black 2px solid;
+        cursor: nwse-resize;
       }
     }
   }
