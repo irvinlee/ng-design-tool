@@ -1,0 +1,20 @@
+<div class="crop-tool-root">
+  <div
+    class="crop-box"
+    [style.left.px]="cropParams.left"
+    [style.top.px]="cropParams.top"
+    [style.width.px]="cropParams.width"
+    [style.height.px]="cropParams.height"
+  >
+    <div
+      class="crop-box-inner"
+      [style.width.px]="cropParams.width"
+      [style.height.px]="cropParams.height"
+    >
+      <div class="top-left-handle"></div>
+      <div class="top-right-handle"></div>
+      <div class="bottom-left-handle"></div>
+      <div class="bottom-right-handle"></div>
+    </div>
+  </div>
+</div>

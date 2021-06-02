@@ -1,0 +1,50 @@
+.crop-tool-root {
+  position: absolute;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  .crop-box {
+    border: black 1px solid;
+    position: absolute;
+
+    .crop-box-inner {
+      position: relative;
+
+      > div {
+        position: absolute;
+        height: 16px;
+        width: 16px;
+      }
+
+      .top-left-handle {
+        left: -8px;
+        top: -8px;
+        border-top: black 2px solid;
+        border-left: black 2px solid;
+      }
+      .top-right-handle {
+        right: -8px;
+        top: -8px;
+        border-top: black 2px solid;
+        border-right: black 2px solid;
+      }
+
+      .bottom-left-handle {
+        left: -8px;
+        bottom: -8px;
+        border-bottom: black 2px solid;
+        border-left: black 2px solid;
+      }
+
+      .bottom-right-handle {
+        right: -8px;
+        bottom: -8px;
+        border-bottom: black 2px solid;
+        border-right: black 2px solid;
+      }
+    }
+  }
+}

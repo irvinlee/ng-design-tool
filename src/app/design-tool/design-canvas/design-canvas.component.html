@@ -1,3 +1,4 @@
 <div class="canvas-wrapper" [style.width.px]="width" [style.height.px]="height">
   <canvas [id]="id" [width]="canvasWidth" [height]="canvasHeight"></canvas>
+  <app-crop-tool [left]="cropLeft" [top]="cropTop" [width]="cropWidth" [height]="cropHeight" *ngIf="isCropping"></app-crop-tool>
 </div>

@@ -1,13 +1,12 @@
 import { MouseHandle } from './../common/classes/mouse-handle';
 import { CanvasMouseEvent } from './../types/canvas-mouse-event';
 import { MouseEventHandler } from './../common/classes/mouse-event-handler';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { DesignToolService } from './../design-tool.service';
 import { AfterViewInit, Component, Input, OnDestroy } from '@angular/core';
-import { generateRandomId, getBearing, getCoordinatesAfterRotation, getRelativeCursorCoordinates, getRotationHandlePosition } from '../common/utils';
+import { generateRandomId } from '../common/utils';
 import { DesignState } from '../common/classes/design-state';
 import { DesignElement } from '../common/classes/design-element';
-import { CanvasElement } from '../common/classes/canvas-element';
 
 @Component({
   selector: 'app-ypdt-design-canvas',
@@ -33,6 +32,12 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   canvasRef?: HTMLCanvasElement;
   canvasContext?: CanvasRenderingContext2D;
   zoomLevel = 1;
+
+  isCropping = true;
+  cropLeft = 100;
+  cropTop = 100;
+  cropWidth = 300;
+  cropHeight = 200;
 
   constructor(private designToolService: DesignToolService) {
     this.subscriptions.push(this.designToolService.designState.subscribe((newDesignState) => {
