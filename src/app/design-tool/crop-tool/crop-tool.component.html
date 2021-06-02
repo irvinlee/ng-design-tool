@@ -1,4 +1,5 @@
-<div class="crop-tool-root">
+<div class="crop-tool-root" [id]="id">
+  <button class="btn-done-cropping" (click)="cropNow()">Crop</button>
   <div
     class="crop-box"
     [style.left.px]="cropParams.left"
@@ -11,10 +12,31 @@
       [style.width.px]="cropParams.width"
       [style.height.px]="cropParams.height"
     >
-      <div class="top-left-handle"></div>
-      <div class="top-right-handle"></div>
-      <div class="bottom-left-handle"></div>
-      <div class="bottom-right-handle"></div>
+      <div
+        class="top-left-handle"
+        draggable="true"
+        (drag)="onResizeHandleDrag('top_left', $event)"
+        (dragend)="onResizeHandleDragEnd('top_left', $event)"
+      ></div>
+      <div
+        class="top-right-handle"
+        draggable="true"
+        (drag)="onResizeHandleDrag('top_right', $event)"
+        (dragend)="onResizeHandleDragEnd('top_right', $event)"
+      ></div>
+      <div
+        class="bottom-left-handle"
+        draggable="true"
+        (drag)="onResizeHandleDrag('bottom_left', $event)"
+        (dragend)="onResizeHandleDragEnd('bottom_left', $event)"
+      >        
+      </div>
+      <div
+        class="bottom-right-handle"
+        draggable="true"
+        (drag)="onResizeHandleDrag('bottom_right', $event)"
+        (dragend)="onResizeHandleDragEnd('bottom_right', $event)"
+      ></div>
     </div>
   </div>
 </div>

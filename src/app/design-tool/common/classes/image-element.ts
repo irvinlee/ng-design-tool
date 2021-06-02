@@ -1,3 +1,4 @@
+import { CropParams } from './../../types/crop-params';
 import { degToRad, getBearing, getCoordinatesAfterRotation } from '../utils';
 import { ElementMouseHandles } from './../../types/element-mouse-handles.enum';
 import { DesignElement } from './design-element';
@@ -64,10 +65,10 @@ export class ImageElement extends DesignElement{
       setTimeout(() => this.render(canvasContext), 200);
       return this;
     }
-    const left = this.left as number;
-    const top = this.top as number;
-    const width = this.width as number;
-    const height = this.height as number;
+    const left = this.cropLeft || 0;
+    const top = this.cropTop || 0;
+    const width = (this.cropWidth || this.width) as number;
+    const height = (this.cropHeight || this.height) as number;
 
     canvasContext.save();
     const xCenter = this.midpointX as number;
@@ -79,14 +80,14 @@ export class ImageElement extends DesignElement{
 
     canvasContext.drawImage(
       this.imageObj as HTMLImageElement,
-      this.cropLeft as number,
-      this.cropTop as number,
-      this.cropWidth || width,
-      this.cropHeight || height,
+      left,
+      top,
+      width,
+      height,
        -width / 2,
       -height / 2,
-      this.cropWidth || width,
-      this.cropHeight || height,
+      this.width as number,
+      this.height as number,
     );
 
     if (this.isHovered || this.isSelected) {
@@ -173,5 +174,15 @@ export class ImageElement extends DesignElement{
       mouseX,
       mouseY
     );
+  }
+
+  crop(cropParams: CropParams): void {
+    this.cropLeft = cropParams.left;
+    this.cropTop = cropParams.top;
+    this.cropWidth = cropParams.width;
+    this.cropHeight = cropParams.height;
+
+    this.height = cropParams.height;
+    this.width = cropParams.width;
   }
 }

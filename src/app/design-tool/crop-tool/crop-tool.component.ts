@@ -1,13 +1,14 @@
 import { ElementMouseHandles } from './../types/element-mouse-handles.enum';
 import { CropParams } from './../types/crop-params';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
+import { generateRandomId } from '../common/utils';
 
 @Component({
   selector: 'app-crop-tool',
   templateUrl: './crop-tool.component.html',
   styleUrls: ['./crop-tool.component.scss']
 })
-export class CropToolComponent implements OnInit {
+export class CropToolComponent implements OnInit, AfterViewInit {
   @Input() left = 0;
   @Input() top = 0;
   @Input() width = 0;
@@ -15,7 +16,9 @@ export class CropToolComponent implements OnInit {
 
   @Output() crop = new EventEmitter<CropParams>();
 
+  id = generateRandomId();
   cropParams: CropParams = {left: 0, top: 0, width: 0, height: 0};
+  wrapperRef?: HTMLElement;
 
   constructor() { }
 
@@ -23,53 +26,70 @@ export class CropToolComponent implements OnInit {
     this.cropParams = {left: this.left, top: this.top, width: this.width, height: this.height};
   }
 
-  private resizeNW(mouseX: number, mouseY: number): void {
-    const oldYCoord = this.cropParams.top as number;
-    const oldXCoord = this.cropParams.left as number;
-    const width = (this.cropParams.width as number);
-    const height = (this.cropParams.height as number);
-
-    this.cropParams.left = mouseX;
-    this.cropParams.top = mouseY;
-
-    this.cropParams.width = width + (oldXCoord - this.left);
-    this.cropParams.height = height + (oldYCoord - this.top);
+  ngAfterViewInit(): void {
+    this.wrapperRef = document.getElementById(this.id) as HTMLElement;
   }
 
-  private resizeNE(mouseX: number, mouseY: number): void {
-    const oldYCoord = this.cropParams.top as number;
-    const width = (this.cropParams.width as number);
-    const height = (this.cropParams.height as number);
+  private resizeNW(event: DragEvent): void {
+    const {left, top, width, height} = this.cropParams;
+    const { clientX, clientY } = event;
 
-    this.cropParams.top = mouseY;
-    this.cropParams.width = width - ((this.cropParams.left as number) + width - mouseX);
-    this.cropParams.height = height + (oldYCoord - this.cropParams.top);
+    this.cropParams.left = clientX;
+    this.cropParams.top = clientY;
+
+    this.cropParams.width = width + (left - clientX);
+    this.cropParams.height = height + (top - clientY);
   }
 
-  private resizeSW(mouseX: number, mouseY: number): void {
-    const oldXCoord = this.cropParams.left as number;
-    const width = (this.cropParams.width as number);
-    const height = (this.cropParams.height as number);
+  private resizeNE(event: DragEvent): void {
+    const {left, top, width, height} = this.cropParams;
+    const { clientX, clientY } = event;
 
-    this.cropParams.left = mouseX;
-    this.cropParams.width = width + (oldXCoord - (this.cropParams.left as number));
-    this.cropParams.height = height - ((this.cropParams.top as number) + height - mouseY);
+    this.cropParams.top = clientY;
+    this.cropParams.width = width - (left + width - clientX);
+    this.cropParams.height = height + (top - clientY);
   }
 
-  private resizeSE(mouseX: number, mouseY: number): void {
-    const width = (this.cropParams.width as number);
-    const height = (this.cropParams.height as number);
+  private resizeSW(event: DragEvent): void {
+    const {left, top, width, height} = this.cropParams;
+    const { clientX, clientY } = event;
 
-    this.cropParams.width = width - ((this.cropParams.left as number) + width - mouseX);
-    this.cropParams.height = height - ((this.top as number) + height - mouseY);
+    this.cropParams.left = clientX;
+    this.cropParams.width = width + (left - clientX);
+    this.cropParams.height = height - (top + height - clientY);
   }
 
-  resize(mouseHandleUsed: string, mouseX: number, mouseY: number): void {
+  private resizeSE(event: DragEvent): void {
+    const {left, top, width, height} = this.cropParams;
+    const { clientX, clientY } = event;
+
+    this.cropParams.width = width - (left + width - clientX);
+    this.cropParams.height = height - (top + height - clientY);
+  }
+
+  resize(mouseHandleUsed: string, event: DragEvent): void {
     switch (mouseHandleUsed) {
-      case ElementMouseHandles.TOP_LEFT: this.resizeNW(mouseX, mouseY); break;
-      case ElementMouseHandles.TOP_RIGHT: this.resizeNE(mouseX, mouseY); break;
-      case ElementMouseHandles.BOTTOM_LEFT: this.resizeSW(mouseX, mouseY); break;
-      case ElementMouseHandles.BOTTOM_RIGHT: this.resizeSE(mouseX, mouseY); break;
+      case ElementMouseHandles.TOP_LEFT: this.resizeNW(event); break;
+      case ElementMouseHandles.TOP_RIGHT: this.resizeNE(event); break;
+      case ElementMouseHandles.BOTTOM_LEFT: this.resizeSW(event); break;
+      case ElementMouseHandles.BOTTOM_RIGHT: this.resizeSE(event); break;
     }
+  }
+
+  onResizeHandleDrag(handle: string, event: DragEvent): void {
+    this.resize(handle, event);
+  }
+
+  onResizeHandleDragEnd(handle: string, event: DragEvent): void {
+    this.resize(handle, event);
+  }
+
+  cropNow(): void {
+    this.crop.emit({
+      left: this.cropParams.left - this.left,
+      top: this.cropParams.top - this.top,
+      width: this.cropParams.width,
+      height: this.cropParams.height
+    });
   }
 }

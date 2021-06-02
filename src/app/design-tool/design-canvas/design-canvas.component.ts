@@ -1,3 +1,4 @@
+import { ImageElement } from './../common/classes/image-element';
 import { CropParams } from './../types/crop-params';
 import { MouseHandle } from './../common/classes/mouse-handle';
 import { CanvasMouseEvent } from './../types/canvas-mouse-event';
@@ -132,6 +133,13 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
   ngOnDestroy(): void {
     this.mouseEventHandler?.unbindCanvasMouseEvents();
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
+  }
+
+  doCropElement(cropParams: CropParams): void {
+    console.log(cropParams);
+    (this.selectedElement as ImageElement).crop(cropParams);
+    this.renderDesign(this.getLocalDesignState());
+    this.designToolService.toggleCroppingMode();
   }
 
   get canvasWidth(): number {
