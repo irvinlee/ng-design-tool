@@ -67,8 +67,8 @@ export class ImageElement extends DesignElement{
     }
     const left = this.cropLeft || 0;
     const top = this.cropTop || 0;
-    const width = (this.cropWidth || this.width) as number;
-    const height = (this.cropHeight || this.height) as number;
+    const width = (this.cropWidth || this.imageObj?.naturalWidth) as number;
+    const height = (this.cropHeight || this.imageObj?.naturalHeight) as number;
 
     canvasContext.save();
     const xCenter = this.midpointX as number;
@@ -84,8 +84,8 @@ export class ImageElement extends DesignElement{
       top,
       width,
       height,
-       -width / 2,
-      -height / 2,
+      -(this.width as number) / 2,
+      -(this.height as number) / 2,
       this.width as number,
       this.height as number,
     );
