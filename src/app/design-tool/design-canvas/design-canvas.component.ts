@@ -53,6 +53,10 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
       }, 10);
     }));
 
+    this.subscriptions.push(this.designToolService.isCropping.subscribe(isCropping => {
+      this.isCropping = isCropping;
+    }));
+
     this.subscriptions.push(this.localDesignState.subscribe((newDesignState) => {
       this.renderDesign(newDesignState);
       this.bindDesignElementMouseEvents(newDesignState);
@@ -64,6 +68,7 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
             const { targetKey, mouseEvent, type } = canvasMouseEvent;
 
             if (canvasMouseEvent.type === 'click') {
+              this.designToolService.setSelectedElementKey('');
               this.clearElementSelection();
             }
 
@@ -71,7 +76,9 @@ export class DesignCanvasComponent implements AfterViewInit, OnDestroy{
               const affectedElement = this.getLocalDesignState().elements.get(targetKey as string);
 
               if (canvasMouseEvent.type === 'click') {
+                // TODO: refactor this so that it only uses the copy from the service...
                 this.selectedElement = affectedElement?.clone();
+                this.designToolService.setSelectedElementKey(targetKey);
               }
 
               affectedElement?.handleMouseEvent(canvasMouseEvent);
