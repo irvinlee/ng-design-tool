@@ -88,7 +88,6 @@ export abstract class DesignElement extends CanvasElement{
         return handle as MouseHandle;
       }
     }
-
     return;
   }
 

@@ -24,7 +24,7 @@ export class MouseEventHandler {
 
   private bindCanvasMouseEvents = (): void => {
     this.canvasRef?.addEventListener('mousemove', this.throttledMouseMove);
-    this.canvasRef?.addEventListener('mousedown', this.onMouseMove);
+    this.canvasRef?.addEventListener('mousedown', this.onMouseDown);
     this.canvasRef?.addEventListener('mouseup', this.onMouseUp);
   }
 
@@ -44,7 +44,6 @@ export class MouseEventHandler {
         maxZIndex = element.zIndex;
       }
     }
-
     return ret;
   }
 

@@ -49,8 +49,10 @@ export function getCoordinatesAfterRotation(
 
 export function getRelativeCursorCoordinates(event: MouseEvent): {x: number, y: number} {
   const target = event.target as HTMLCanvasElement;
+  const boundingRec = target.getBoundingClientRect();
+
   return {
-    x: event.clientX - target.offsetLeft,
-    y: event.clientY - target.offsetTop,
+    x: event.clientX - boundingRec.x,
+    y: event.clientY - boundingRec.y,
   };
 }
